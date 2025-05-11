@@ -32,9 +32,10 @@
       text-decoration: none;
     }
 
+    /* Gallery styles */
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
       width: 100%;
       max-width: 1000px;
@@ -101,6 +102,7 @@
       animation: fadeIn 0.5s ease forwards;
     }
 
+    /* Modal styles */
     .modal {
       position: fixed;
       top: 0;
@@ -157,14 +159,16 @@
       text-decoration: none;
     }
 
-    /* Additional styles for mobile responsiveness */
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 22px;
-      }
-
+    /* Responsive design */
+    @media (max-width: 1024px) {
       .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns on tablet-sized screens */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .gallery {
+        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns even on small mobile devices */
       }
     }
   </style>
@@ -218,7 +222,6 @@
           return { itemRef, timeCreated: metadata.timeCreated };
         }));
 
-        // Sort images by most recent upload time
         itemsWithDates.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
         images = [];
 
