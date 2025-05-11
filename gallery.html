@@ -35,6 +35,7 @@
       gap: 15px;
       width: 100%;
       max-width: 1000px;
+      position: relative;
     }
 
     .gallery-item {
@@ -170,7 +171,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
@@ -201,12 +202,22 @@
         const result = await listAll(photosRef);
         images = [];
 
-        for (const itemRef of result.items) {
+        // Fetch metadata for each image and store both the URL and metadata
+        const metadataPromises = result.items.map(async (itemRef) => {
           const url = await getDownloadURL(itemRef);
-          images.push(url);
+          const metadata = await getMetadata(itemRef); // Fetch metadata to get the upload date
+          return { url, metadata };
+        });
 
+        const imageData = await Promise.all(metadataPromises);
+
+        // Sort images by upload date (timeCreated), latest first
+        imageData.sort((a, b) => b.metadata.timeCreated - a.metadata.timeCreated);
+
+        // Create the gallery items with sorted images
+        imageData.forEach(({ url }) => {
           const galleryItem = document.createElement('div');
-          galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
+          galleryItem.classList.add('gallery-item', 'fade-in');
 
           const spinner = document.createElement('div');
           spinner.classList.add('spinner');
@@ -228,7 +239,7 @@
           galleryItem.appendChild(spinner);
           galleryItem.appendChild(img);
           gallery.appendChild(galleryItem);
-        }
+        });
 
         if (result.items.length === 0) {
           gallery.innerHTML = "<p>No photos uploaded yet.</p>";
