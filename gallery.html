@@ -40,8 +40,9 @@
 
     .gallery img {
       width: 100%;
-      height: 200px;
-      object-fit: cover;
+      height: 0; /* Start with no height */
+      padding-top: 100%; /* This gives the element a square shape */
+      object-fit: cover; /* Ensures the image fills the square without distortion */
       border-radius: 8px;
       cursor: pointer;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
