@@ -63,6 +63,31 @@
       display: flex;
     }
 
+    /* Arrows for navigation */
+    .arrow {
+      position: absolute;
+      top: 50%;
+      color: white;
+      font-size: 30px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .arrow:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .arrow-left {
+      left: 10px;
+    }
+
+    .arrow-right {
+      right: 10px;
+    }
+
     .close-btn {
       position: absolute;
       top: 20px;
@@ -82,29 +107,22 @@
   <div id="modal" class="modal">
     <a href="#" class="close-btn">&times;</a>
     <img id="modalImage" src="" alt="Full View">
+    <span class="arrow arrow-left" id="prevArrow">&#8592;</span>
+    <span class="arrow arrow-right" id="nextArrow">&#8594;</span>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
     import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
-     const firebaseConfig = {
-
-    apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
-
-    authDomain: "sarah-and-doug-2025.firebaseapp.com",
-
-    projectId: "sarah-and-doug-2025",
-
-    storageBucket: "sarah-and-doug-2025.firebasestorage.app",
-
-    messagingSenderId: "1030871235471",
-
-    appId: "1:1030871235471:web:40220c1c2a71082e2769fa",
-
-    measurementId: "G-XJJL710JTX"
-
-  };
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
 
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
@@ -113,21 +131,25 @@
     const gallery = document.getElementById('gallery');
     const modal = document.getElementById('modal');
     const modalImage = document.getElementById('modalImage');
+    const prevArrow = document.getElementById('prevArrow');
+    const nextArrow = document.getElementById('nextArrow');
+    let images = [];
+    let currentIndex = 0;
 
     gallery.innerHTML = '';
 
     async function loadImages() {
       try {
         const result = await listAll(photosRef);
+        images = [];
         for (const itemRef of result.items) {
           const url = await getDownloadURL(itemRef);
+          images.push(url);
+          
           const img = document.createElement('img');
           img.src = url;
           img.alt = "Uploaded photo";
-          img.addEventListener('click', () => {
-            modalImage.src = url;
-            window.location.hash = 'modal';
-          });
+          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
           gallery.appendChild(img);
         }
 
@@ -139,6 +161,30 @@
         gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
       }
     }
+
+    function openModal(url, index) {
+      currentIndex = index;
+      modalImage.src = url;
+      window.location.hash = 'modal'; // Open the modal via hash
+    }
+
+    function showNextImage() {
+      if (currentIndex < images.length - 1) {
+        currentIndex++;
+        modalImage.src = images[currentIndex];
+      }
+    }
+
+    function showPrevImage() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        modalImage.src = images[currentIndex];
+      }
+    }
+
+    // Arrow event listeners
+    nextArrow.addEventListener('click', showNextImage);
+    prevArrow.addEventListener('click', showPrevImage);
 
     loadImages();
   </script>
