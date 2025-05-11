@@ -40,10 +40,11 @@
     .gallery-item {
       position: relative;
       width: 100%;
-      padding-top: 100%; /* 1:1 aspect ratio */
+      padding-top: 100%;
       overflow: hidden;
       border-radius: 8px;
       background-color: #eee;
+      opacity: 0; /* Start transparent for animation */
     }
 
     .gallery-item img {
@@ -64,7 +65,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    /* Loading Spinner */
+    /* Spinner */
     .spinner {
       position: absolute;
       top: 50%;
@@ -222,7 +223,7 @@
           img.onload = () => {
             spinner.remove();
             img.style.display = 'block';
-            img.classList.add('fade-in');
+            galleryItem.classList.add('fade-in'); // Apply fade to container
           };
           img.onerror = () => {
             spinner.remove();
