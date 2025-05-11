@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Photo Gallery</title>
   <style>
+    /* General body styles */
     body {
-      font-family: sans-serif;
-      background-color: #f5f5f5;
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f4f1;
+      margin: 0;
       padding: 20px;
       display: flex;
       justify-content: center;
@@ -16,9 +18,10 @@
     }
 
     h1 {
-      font-size: 24px;
+      font-size: 28px;
       margin-bottom: 30px;
       text-align: center;
+      color: #3b5c3b;
     }
 
     a {
@@ -31,8 +34,8 @@
 
     .gallery {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
       width: 100%;
       max-width: 1000px;
     }
@@ -43,7 +46,7 @@
       padding-top: 100%;
       overflow: hidden;
       border-radius: 8px;
-      background-color: #eee;
+      background-color: #f1f1f1;
       opacity: 0;
     }
 
@@ -62,7 +65,7 @@
 
     .gallery-item img:hover {
       transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     .spinner {
@@ -104,7 +107,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.8);
       display: none;
       align-items: center;
       justify-content: center;
@@ -126,7 +129,7 @@
       top: 50%;
       color: white;
       font-size: 30px;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.6);
       padding: 10px;
       border-radius: 50%;
       cursor: pointer;
@@ -152,6 +155,17 @@
       color: white;
       font-size: 32px;
       text-decoration: none;
+    }
+
+    /* Additional styles for mobile responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 22px;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
     }
   </style>
 </head>
@@ -204,6 +218,7 @@
           return { itemRef, timeCreated: metadata.timeCreated };
         }));
 
+        // Sort images by most recent upload time
         itemsWithDates.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
         images = [];
 
