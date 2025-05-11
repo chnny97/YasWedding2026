@@ -13,6 +13,9 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+      position: relative;
     }
 
     h1 {
@@ -69,10 +72,10 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 30px;
-      height: 30px;
-      margin: -15px 0 0 -15px;
-      border: 4px solid #ccc;
+      width: 50px;
+      height: 50px;
+      margin: -25px 0 0 -25px;
+      border: 5px solid #ccc;
       border-top-color: #333;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -153,9 +156,28 @@
       font-size: 32px;
       text-decoration: none;
     }
+
+    /* Loader overlay */
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
+
+  <!-- Loading Spinner Overlay -->
+  <div class="loader-overlay" id="loader-overlay">
+    <div class="spinner"></div>
+  </div>
 
   <a href="index.html">📷 Go Back to Upload</a>
   <h1>Uploaded Photos</h1>
@@ -191,6 +213,7 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
+    const loaderOverlay = document.getElementById('loader-overlay'); // Loading overlay
 
     let images = [];
     let currentIndex = 0;
@@ -244,6 +267,9 @@
       // Trigger lazy loading on scroll
       lazyLoadImages();
       window.addEventListener('scroll', lazyLoadImages);
+
+      // Hide the loading overlay once images are loaded
+      loaderOverlay.style.display = 'none';
     }
 
     // Lazy load images when they are in the viewport
