@@ -153,6 +153,26 @@
       font-size: 32px;
       text-decoration: none;
     }
+
+    .pagination {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .pagination button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .pagination button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -166,6 +186,11 @@
     <img id="modalImage" src="" alt="Full View" />
     <span class="arrow arrow-left" id="prevArrow">&#8592;</span>
     <span class="arrow arrow-right" id="nextArrow">&#8594;</span>
+  </div>
+
+  <div class="pagination" id="pagination">
+    <button id="prevPageBtn" disabled>Previous</button>
+    <button id="nextPageBtn">Next</button>
   </div>
 
   <script type="module">
@@ -191,10 +216,12 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
-    let images = [];
-    let currentIndex = 0;
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
 
-    gallery.innerHTML = '';
+    let images = [];
+    let currentPage = 1;
+    const imagesPerPage = 12;
 
     async function loadImages() {
       try {
@@ -202,65 +229,72 @@
         images = [];
 
         for (const itemRef of result.items) {
-          const url = await getDownloadURL(itemRef);
-          images.push(url);
-
-          const galleryItem = document.createElement('div');
-          galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
-
-          const spinner = document.createElement('div');
-          spinner.classList.add('spinner');
-
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = "Uploaded photo";
-          img.onload = () => {
-            spinner.remove();
-            img.style.display = 'block';
-          };
-          img.onerror = () => {
-            spinner.remove();
-            console.error(`Failed to load image: ${url}`);
-            img.style.display = 'none';
-          };
-          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
-
-          galleryItem.appendChild(spinner);
-          galleryItem.appendChild(img);
-          gallery.appendChild(galleryItem);
+          const fullImageUrl = await getDownloadURL(itemRef);
+          images.push(fullImageUrl);
         }
 
-        if (result.items.length === 0) {
-          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
-        }
+        renderGallery();
+        updatePaginationButtons();
       } catch (error) {
         console.error("Failed to load images:", error);
         gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
       }
     }
 
+    function renderGallery() {
+      gallery.innerHTML = '';
+      const startIdx = (currentPage - 1) * imagesPerPage;
+      const endIdx = Math.min(startIdx + imagesPerPage, images.length);
+
+      for (let i = startIdx; i < endIdx; i++) {
+        const fullImageUrl = images[i];
+
+        const galleryItem = document.createElement('div');
+        galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
+
+        const spinner = document.createElement('div');
+        spinner.classList.add('spinner');
+
+        const img = document.createElement('img');
+        img.src = fullImageUrl;  // Use full image as preview
+        img.alt = "Uploaded photo";
+
+        img.addEventListener('click', () => {
+          openModal(fullImageUrl, images.indexOf(fullImageUrl));
+        });
+
+        galleryItem.appendChild(spinner);
+        galleryItem.appendChild(img);
+        gallery.appendChild(galleryItem);
+      }
+    }
+
     function openModal(url, index) {
-      currentIndex = index;
       modalImage.src = url;
+      currentIndex = index;
       window.location.hash = 'modal';
     }
 
-    function showNextImage() {
-      if (currentIndex < images.length - 1) {
-        currentIndex++;
-        modalImage.src = images[currentIndex];
-      }
+    function updatePaginationButtons() {
+      prevPageBtn.disabled = currentPage === 1;
+      nextPageBtn.disabled = currentPage * imagesPerPage >= images.length;
     }
 
-    function showPrevImage() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        modalImage.src = images[currentIndex];
+    prevPageBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderGallery();
+        updatePaginationButtons();
       }
-    }
+    });
 
-    nextArrow.addEventListener('click', showNextImage);
-    prevArrow.addEventListener('click', showPrevImage);
+    nextPageBtn.addEventListener('click', () => {
+      if (currentPage * imagesPerPage < images.length) {
+        currentPage++;
+        renderGallery();
+        updatePaginationButtons();
+      }
+    });
 
     loadImages();
   </script>
