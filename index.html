@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sarah & Doug 2026</title>
+  <title>Upload Photo</title>
   <style>
     body {
       font-family: sans-serif;
@@ -36,6 +36,21 @@
       color: #333;
     }
 
+    .progress-container {
+      margin-top: 20px;
+      width: 100%;
+      background-color: #f3f3f3;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 10px;
+      width: 0%;
+      background-color: #4caf50;
+      transition: width 0.4s ease;
+    }
+
     a {
       display: block;
       margin-top: 30px;
@@ -57,24 +72,32 @@
 
   <div class="status" id="status"></div>
 
+  <!-- Progress Bar -->
+  <div class="progress-container" id="progressContainer" style="display: none;">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
   <a href="gallery.html">📸 View Uploaded Gallery</a>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
+      apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
+      authDomain: "sarah-and-doug-2025.firebaseapp.com",
+      projectId: "sarah-and-doug-2025",
+      storageBucket: "sarah-and-doug-2025.firebasestorage.app",
+      messagingSenderId: "1030871235471",
+      appId: "1:1030871235471:web:40220c1c2a71082e2769fa",
+      measurementId: "G-XJJL710JTX"
     };
 
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
     const statusEl = document.getElementById('status');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
 
     // Event listeners for both inputs
     document.getElementById('cameraInput').addEventListener('change', handleUpload);
@@ -87,14 +110,26 @@
       const timestamp = new Date().toISOString();
       const fileRef = ref(storage, 'photos/' + timestamp + '_' + file.name);
 
-      try {
-        statusEl.textContent = 'Uploading...';
-        await uploadBytes(fileRef, file);
-        statusEl.textContent = '✅ Upload successful!';
-      } catch (err) {
-        console.error(err);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      // Show progress container
+      progressContainer.style.display = 'block';
+      statusEl.textContent = 'Uploading...';
+
+      uploadTask.on('state_changed', (snapshot) => {
+        // Get upload progress
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        progressBar.style.width = progress + '%'; // Update progress bar
+      }, (error) => {
+        // Handle error
+        console.error(error);
         statusEl.textContent = '❌ Upload failed.';
-      }
+        progressContainer.style.display = 'none';
+      }, () => {
+        // Upload completed successfully
+        statusEl.textContent = '✅ Upload successful!';
+        progressContainer.style.display = 'none';
+      });
     }
   </script>
 </body>
