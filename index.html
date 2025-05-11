@@ -9,13 +9,13 @@
       font-family: 'Georgia', serif;
       padding: 30px;
       text-align: center;
-      background-color: #f4f1eb;
-      color: #3c3c3c;
+      background-color: #f4f1eb; /* Soft off-white background */
+      color: #3c3c3c; /* Dark gray text for good contrast */
     }
 
     h1 {
       font-size: 36px;
-      color: #4b8c43;
+      color: #4b8c43; /* Earthy green for header */
       font-family: 'Palatino', serif;
       margin-bottom: 20px;
       text-transform: uppercase;
@@ -24,7 +24,7 @@
 
     h2 {
       font-size: 22px;
-      color: #6d8e4d;
+      color: #6d8e4d; /* Lighter green for subheaders */
       margin-top: 20px;
       font-family: 'Verdana', sans-serif;
     }
@@ -42,7 +42,7 @@
       margin: 12px 10px;
       border-radius: 8px;
       border: none;
-      background-color: #6d8e4d;
+      background-color: #6d8e4d; /* Soft earthy green for button */
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -50,7 +50,7 @@
     }
 
     button:hover {
-      background-color: #4b8c43;
+      background-color: #4b8c43; /* Darker green for hover effect */
     }
 
     .status {
@@ -92,25 +92,51 @@
       margin-top: 40px;
     }
 
-    #featured img {
-      max-width: 400px;
-      width: 100%;
+    #featured h2 {
+      margin-bottom: 10px;
+    }
+
+    #featured .image-container {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
       border-radius: 10px;
-      margin-top: 10px;
+      overflow: hidden;
       border: 2px solid #ddd;
-      padding: 4px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 28px; }
-      h2 { font-size: 18px; }
-      button { font-size: 16px; padding: 10px 20px; }
-      .status { font-size: 18px; }
-      a { font-size: 18px; }
+    #featured img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-      #featured img {
-        max-width: 90%;
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+
+      .status {
+        font-size: 18px;
+      }
+
+      a {
+        font-size: 18px;
+      }
+
+      #featured .image-container {
+        width: 90vw;
+        height: 90vw;
       }
     }
   </style>
@@ -139,12 +165,14 @@
   <!-- Featured Photo -->
   <div id="featured">
     <h2>🌟 Featured Memory</h2>
-    <img id="featuredImage" src="" alt="Featured memory from the gallery" />
+    <div class="image-container">
+      <img id="featuredImage" src="" alt="Featured memory from the gallery" />
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, listAll, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, uploadBytesResumable, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
@@ -162,6 +190,7 @@
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
 
+    // Upload handler
     document.getElementById('cameraInput').addEventListener('change', handleUpload);
     document.getElementById('libraryInput').addEventListener('change', handleUpload);
 
@@ -171,13 +200,11 @@
 
       progressContainer.style.display = 'block';
       statusEl.textContent = 'Uploading...';
-
       let uploadedCount = 0;
 
       for (const file of files) {
         const timestamp = new Date().toISOString();
         const fileRef = ref(storage, 'photos/' + timestamp + '_' + file.name);
-
         const uploadTask = uploadBytesResumable(fileRef, file);
 
         uploadTask.on('state_changed', (snapshot) => {
@@ -191,20 +218,20 @@
           if (uploadedCount === files.length) {
             statusEl.textContent = '✅ Upload successful! Thanks for making a special memory with us!';
             progressContainer.style.display = 'none';
-            progressBar.style.width = '0%';
           }
         });
       }
     }
 
+    // Featured photo loader
     async function loadFeaturedPhoto() {
       try {
-        const listRef = ref(storage, 'photos');
-        const result = await listAll(listRef);
-        if (result.items.length === 0) return;
+        const photosRef = ref(storage, 'photos');
+        const list = await listAll(photosRef);
+        if (list.items.length === 0) return;
 
-        const randomItem = result.items[Math.floor(Math.random() * result.items.length)];
-        const url = await getDownloadURL(randomItem);
+        const randomIndex = Math.floor(Math.random() * list.items.length);
+        const url = await getDownloadURL(list.items[randomIndex]);
         document.getElementById('featuredImage').src = url;
       } catch (error) {
         console.error('Error loading featured photo:', error);
