@@ -93,9 +93,13 @@
     }
 
     #featured img {
-      max-width: 100%;
+      max-width: 400px;
+      width: 100%;
       border-radius: 10px;
       margin-top: 10px;
+      border: 2px solid #ddd;
+      padding: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     @media (max-width: 600px) {
@@ -104,6 +108,10 @@
       button { font-size: 16px; padding: 10px 20px; }
       .status { font-size: 18px; }
       a { font-size: 18px; }
+
+      #featured img {
+        max-width: 90%;
+      }
     }
   </style>
 </head>
@@ -111,14 +119,17 @@
   <h1>Sarah & Doug's Wedding 2026</h1>
   <h2>Capture your memories with us!</h2>
 
+  <!-- Hidden Inputs for File Upload -->
   <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
   <input type="file" accept="image/*" id="libraryInput" multiple style="display: none;">
 
+  <!-- Visible Buttons for Upload -->
   <button onclick="document.getElementById('cameraInput').click()">📷 Take a Photo</button>
   <button onclick="document.getElementById('libraryInput').click()">🖼 Choose from Library</button>
 
   <div class="status" id="status"></div>
 
+  <!-- Progress Bar -->
   <div class="progress-container" id="progressContainer" style="display: none;">
     <div class="progress-bar" id="progressBar"></div>
   </div>
@@ -127,19 +138,13 @@
 
   <!-- Featured Photo -->
   <div id="featured">
-    <h2>🌟 Featured Photo</h2>
-    <img id="featuredImage" src="" alt="Featured" />
+    <h2>🌟 Featured Memory</h2>
+    <img id="featuredImage" src="" alt="Featured memory from the gallery" />
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytesResumable,
-      listAll,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, listAll, getDownloadURL, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
@@ -186,27 +191,23 @@
           if (uploadedCount === files.length) {
             statusEl.textContent = '✅ Upload successful! Thanks for making a special memory with us!';
             progressContainer.style.display = 'none';
+            progressBar.style.width = '0%';
           }
         });
       }
     }
 
     async function loadFeaturedPhoto() {
-      const photosRef = ref(storage, 'photos/');
       try {
-        const result = await listAll(photosRef);
-        const items = result.items;
-        if (items.length === 0) {
-          document.getElementById('featuredImage').alt = 'No photos yet!';
-          return;
-        }
-        const randomIndex = Math.floor(Math.random() * items.length);
-        const randomRef = items[randomIndex];
-        const url = await getDownloadURL(randomRef);
+        const listRef = ref(storage, 'photos');
+        const result = await listAll(listRef);
+        if (result.items.length === 0) return;
+
+        const randomItem = result.items[Math.floor(Math.random() * result.items.length)];
+        const url = await getDownloadURL(randomItem);
         document.getElementById('featuredImage').src = url;
-      } catch (err) {
-        console.error('Error fetching featured photo:', err);
-        document.getElementById('featuredImage').alt = 'Unable to load featured photo.';
+      } catch (error) {
+        console.error('Error loading featured photo:', error);
       }
     }
 
