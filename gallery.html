@@ -185,7 +185,6 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
     const photosRef = ref(storage, 'photos');
-    const thumbnailsRef = ref(storage, 'thumbnails');
 
     const gallery = document.getElementById('gallery');
     const modal = document.getElementById('modal');
@@ -203,11 +202,8 @@
         images = [];
 
         for (const itemRef of result.items) {
-          // Get the thumbnail URL first
-          const thumbnailUrl = await getDownloadURL(ref(storage, 'thumbnails/' + itemRef.name));
-          const fullImageUrl = await getDownloadURL(itemRef);
-
-          images.push(fullImageUrl);
+          const url = await getDownloadURL(itemRef);
+          images.push(url);
 
           const galleryItem = document.createElement('div');
           galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
@@ -216,13 +212,18 @@
           spinner.classList.add('spinner');
 
           const img = document.createElement('img');
-          img.setAttribute('data-full-url', fullImageUrl);
-          img.src = thumbnailUrl;  // Use the thumbnail as the preview
+          img.src = url;
           img.alt = "Uploaded photo";
-
-          img.addEventListener('click', () => {
-            openModal(fullImageUrl, images.indexOf(fullImageUrl));
-          });
+          img.onload = () => {
+            spinner.remove();
+            img.style.display = 'block';
+          };
+          img.onerror = () => {
+            spinner.remove();
+            console.error(`Failed to load image: ${url}`);
+            img.style.display = 'none';
+          };
+          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
 
           galleryItem.appendChild(spinner);
           galleryItem.appendChild(img);
