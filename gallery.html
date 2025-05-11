@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .gallery img {
+      width: 200px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>Uploaded Photos</h1>
+  <div class="gallery" id="gallery"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const photosRef = ref(storage, 'photos');
+
+    const gallery = document.getElementById('gallery');
+
+    async function loadImages() {
+      try {
+        const result = await listAll(photosRef);
+        for (const itemRef of result.items) {
+          const url = await getDownloadURL(itemRef);
+          const img = document.createElement('img');
+          img.src = url;
+          gallery.appendChild(img);
+        }
+      } catch (error) {
+        console.error("Failed to load images:", error);
+        gallery.textContent = "Could not load images.";
+      }
+    }
+
+    loadImages();
+  </script>
+</body>
+</html>
