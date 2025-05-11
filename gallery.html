@@ -83,6 +83,22 @@
       to { transform: rotate(360deg); }
     }
 
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
     /* Modal Styles */
     .modal {
       position: fixed;
@@ -206,6 +222,7 @@
           img.onload = () => {
             spinner.remove();
             img.style.display = 'block';
+            img.classList.add('fade-in');
           };
           img.onerror = () => {
             spinner.remove();
