@@ -17,16 +17,22 @@
 
     h1 {
       font-size: 24px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
       text-align: center;
     }
 
     a {
       display: inline-block;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       font-size: 16px;
       color: #0077cc;
       text-decoration: none;
+    }
+
+    #photoCount {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #555;
     }
 
     .gallery {
@@ -153,12 +159,25 @@
       font-size: 32px;
       text-decoration: none;
     }
+
+    @media (max-width: 768px) {
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
 
   <a href="index.html">📷 Go Back to Upload</a>
   <h1>Uploaded Photos</h1>
+  <div id="photoCount"></div>
   <div class="gallery" id="gallery">Loading...</div>
 
   <div id="modal" class="modal">
@@ -170,7 +189,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
@@ -191,6 +210,8 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
+    const countElement = document.getElementById('photoCount');
+
     let images = [];
     let currentIndex = 0;
 
@@ -199,15 +220,17 @@
     async function loadImages() {
       try {
         const result = await listAll(photosRef);
-        const itemsWithDates = await Promise.all(result.items.map(async (itemRef) => {
-          const metadata = await getMetadata(itemRef);
-          return { itemRef, timeCreated: metadata.timeCreated };
-        }));
-
-        itemsWithDates.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
         images = [];
 
-        for (const { itemRef } of itemsWithDates) {
+        // Show count
+        countElement.textContent = `Total Memories made: ${result.items.length}`;
+
+        if (result.items.length === 0) {
+          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
+          return;
+        }
+
+        for (const itemRef of result.items.reverse()) {
           const url = await getDownloadURL(itemRef);
           images.push(url);
 
@@ -234,10 +257,6 @@
           galleryItem.appendChild(spinner);
           galleryItem.appendChild(img);
           gallery.appendChild(galleryItem);
-        }
-
-        if (result.items.length === 0) {
-          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
         }
       } catch (error) {
         console.error("Failed to load images:", error);
