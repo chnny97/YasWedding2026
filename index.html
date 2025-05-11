@@ -9,13 +9,13 @@
       font-family: 'Georgia', serif;
       padding: 30px;
       text-align: center;
-      background-color: #f4f1eb; /* Soft off-white background */
-      color: #3c3c3c; /* Dark gray text for good contrast */
+      background-color: #f4f1eb;
+      color: #3c3c3c;
     }
 
     h1 {
       font-size: 36px;
-      color: #4b8c43; /* Earthy green for header */
+      color: #4b8c43;
       font-family: 'Palatino', serif;
       margin-bottom: 20px;
       text-transform: uppercase;
@@ -24,7 +24,7 @@
 
     h2 {
       font-size: 22px;
-      color: #6d8e4d; /* Lighter green for subheaders */
+      color: #6d8e4d;
       margin-top: 20px;
       font-family: 'Verdana', sans-serif;
     }
@@ -42,7 +42,7 @@
       margin: 12px 10px;
       border-radius: 8px;
       border: none;
-      background-color: #6d8e4d; /* Soft earthy green for button */
+      background-color: #6d8e4d;
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -50,7 +50,7 @@
     }
 
     button:hover {
-      background-color: #4b8c43; /* Darker green for hover effect */
+      background-color: #4b8c43;
     }
 
     .status {
@@ -96,20 +96,20 @@
       margin-bottom: 10px;
     }
 
-    #featured .image-container {
+    .image-container {
       width: 300px;
       height: 300px;
       margin: 0 auto;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      border: 2px solid #ddd;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      border: 2px solid #ccc;
     }
 
-    #featured img {
+    .image-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      max-width: 100%;
     }
 
     @media (max-width: 600px) {
@@ -134,7 +134,7 @@
         font-size: 18px;
       }
 
-      #featured .image-container {
+      .image-container {
         width: 90vw;
         height: 90vw;
       }
@@ -145,11 +145,11 @@
   <h1>Sarah & Doug's Wedding 2026</h1>
   <h2>Capture your memories with us!</h2>
 
-  <!-- Hidden Inputs for File Upload -->
+  <!-- Hidden Inputs -->
   <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
   <input type="file" accept="image/*" id="libraryInput" multiple style="display: none;">
 
-  <!-- Visible Buttons for Upload -->
+  <!-- Upload Buttons -->
   <button onclick="document.getElementById('cameraInput').click()">📷 Take a Photo</button>
   <button onclick="document.getElementById('libraryInput').click()">🖼 Choose from Library</button>
 
@@ -162,11 +162,11 @@
 
   <a href="gallery.html">📸 View Uploaded Gallery</a>
 
-  <!-- Featured Photo -->
+  <!-- Featured Photo Section -->
   <div id="featured">
-    <h2>🌟 Featured Memory</h2>
+    <h2>Featured Memory</h2>
     <div class="image-container">
-      <img id="featuredImage" src="" alt="Featured memory from the gallery" />
+      <img id="featuredImage" src="" alt="Featured Memory">
     </div>
   </div>
 
@@ -190,7 +190,6 @@
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
 
-    // Upload handler
     document.getElementById('cameraInput').addEventListener('change', handleUpload);
     document.getElementById('libraryInput').addEventListener('change', handleUpload);
 
@@ -200,6 +199,7 @@
 
       progressContainer.style.display = 'block';
       statusEl.textContent = 'Uploading...';
+
       let uploadedCount = 0;
 
       for (const file of files) {
@@ -223,18 +223,18 @@
       }
     }
 
-    // Featured photo loader
     async function loadFeaturedPhoto() {
+      const photosRef = ref(storage, 'photos');
       try {
-        const photosRef = ref(storage, 'photos');
-        const list = await listAll(photosRef);
-        if (list.items.length === 0) return;
+        const result = await listAll(photosRef);
+        if (result.items.length === 0) return;
 
-        const randomIndex = Math.floor(Math.random() * list.items.length);
-        const url = await getDownloadURL(list.items[randomIndex]);
+        const randomIndex = Math.floor(Math.random() * result.items.length);
+        const randomRef = result.items[randomIndex];
+        const url = await getDownloadURL(randomRef);
         document.getElementById('featuredImage').src = url;
-      } catch (error) {
-        console.error('Error loading featured photo:', error);
+      } catch (err) {
+        console.error("Failed to load featured photo", err);
       }
     }
 
