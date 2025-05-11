@@ -1,93 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sarah & Doug's Wedding 2026</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: 'Georgia', serif;
+      padding: 30px;
       text-align: center;
-      background: #f5f5f5;
-      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
     }
 
     h1 {
+      font-size: 36px;
+      color: #4a90e2;
+      font-family: 'Palatino', serif;
       margin-bottom: 20px;
-      font-size: 6vw;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    h2 {
+      font-size: 22px;
+      color: #4a90e2;
+      margin-top: 20px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
     }
 
     button {
-      padding: 15px 25px;
-      margin: 12px;
-      font-size: 5vw;
+      padding: 12px 30px;
+      font-size: 18px;
+      margin: 12px 10px;
+      border-radius: 8px;
       border: none;
-      border-radius: 10px;
-      background: #007bff;
+      background-color: #ff99cc;
       color: white;
       cursor: pointer;
-      width: 90%;
-      max-width: 300px;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      font-family: 'Verdana', sans-serif;
     }
 
     button:hover {
-      background: #005fcc;
+      background-color: #e68a9d;
     }
 
     .status {
       margin-top: 20px;
-      font-size: 4.5vw;
+      font-size: 20px;
       color: #333;
+      font-family: 'Verdana', sans-serif;
     }
 
     .progress-container {
       margin-top: 20px;
-      width: 90%;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
+      width: 100%;
       background-color: #f3f3f3;
       border-radius: 8px;
       overflow: hidden;
     }
 
     .progress-bar {
-      height: 12px;
+      height: 10px;
       width: 0%;
-      background-color: #4caf50;
+      background-color: #ff99cc;
       transition: width 0.4s ease;
     }
 
     a {
       display: block;
-      margin-top: 40px;
-      font-size: 4.5vw;
+      margin-top: 30px;
       text-decoration: none;
-      color: #007bff;
+      color: #4a90e2;
+      font-size: 20px;
     }
 
-    @media (min-width: 600px) {
+    a:hover {
+      color: #e68a9d;
+    }
+
+    /* Styling for mobile devices */
+    @media (max-width: 600px) {
       h1 {
-        font-size: 32px;
+        font-size: 28px;
       }
-      button {
+
+      h2 {
         font-size: 18px;
       }
-      .status, a {
+
+      button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+
+      .status {
+        font-size: 18px;
+      }
+
+      a {
         font-size: 18px;
       }
     }
+
   </style>
 </head>
 <body>
   <h1>Sarah & Doug's Wedding 2026</h1>
+  <h2>Capture your memories with us!</h2>
 
-  <!-- Hidden Inputs -->
+  <!-- Hidden Inputs for File Upload -->
   <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
   <input type="file" accept="image/*" id="libraryInput" multiple style="display: none;">
 
-  <!-- Visible Buttons -->
+  <!-- Visible Buttons for Upload -->
   <button onclick="document.getElementById('cameraInput').click()">📷 Take a Photo</button>
   <button onclick="document.getElementById('libraryInput').click()">🖼 Choose from Library</button>
 
@@ -120,6 +153,7 @@
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
 
+    // Event listeners for both inputs
     document.getElementById('cameraInput').addEventListener('change', handleUpload);
     document.getElementById('libraryInput').addEventListener('change', handleUpload);
 
@@ -127,23 +161,29 @@
       const files = event.target.files;
       if (!files.length) return;
 
+      // Show progress container
       progressContainer.style.display = 'block';
       statusEl.textContent = 'Uploading...';
 
       let uploadedCount = 0;
 
+      // Loop through all selected files
       for (const file of files) {
         const timestamp = new Date().toISOString();
         const fileRef = ref(storage, 'photos/' + timestamp + '_' + file.name);
+
         const uploadTask = uploadBytesResumable(fileRef, file);
 
         uploadTask.on('state_changed', (snapshot) => {
+          // Get upload progress
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progressBar.style.width = progress + '%';
+          progressBar.style.width = progress + '%'; // Update progress bar
         }, (error) => {
+          // Handle error
           console.error(error);
           statusEl.textContent = '❌ Upload failed.';
         }, () => {
+          // Upload completed successfully
           uploadedCount++;
           if (uploadedCount === files.length) {
             statusEl.textContent = '✅ Upload successful! Thanks for making a special memory with us!';
