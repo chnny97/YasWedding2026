@@ -185,7 +185,6 @@
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
     const photosRef = ref(storage, 'photos');
-    const thumbnailsRef = ref(storage, 'thumbnails');
 
     const gallery = document.getElementById('gallery');
     const modal = document.getElementById('modal');
@@ -203,10 +202,7 @@
         images = [];
 
         for (const itemRef of result.items) {
-          // Get the thumbnail URL first
-          const thumbnailUrl = await getDownloadURL(ref(storage, 'thumbnails/' + itemRef.name));
           const fullImageUrl = await getDownloadURL(itemRef);
-
           images.push(fullImageUrl);
 
           const galleryItem = document.createElement('div');
@@ -216,8 +212,7 @@
           spinner.classList.add('spinner');
 
           const img = document.createElement('img');
-          img.setAttribute('data-full-url', fullImageUrl);
-          img.src = thumbnailUrl;  // Use the thumbnail as the preview
+          img.src = fullImageUrl;  // Use full image as preview
           img.alt = "Uploaded photo";
 
           img.addEventListener('click', () => {
