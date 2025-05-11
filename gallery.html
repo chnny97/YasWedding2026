@@ -49,11 +49,10 @@
     .gallery-item {
       position: relative;
       width: 100%;
-      padding-top: 100%;
+      padding-top: 100%; /* This makes the container aspect ratio 1:1 (square) */
       overflow: hidden;
       border-radius: 8px;
       background-color: #e0e0e0;
-      opacity: 0;
     }
 
     .gallery-item img {
@@ -65,7 +64,7 @@
       object-fit: cover;
       border-radius: 8px;
       cursor: pointer;
-      display: none;
+      display: block; /* Ensure the image is always visible */
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
