@@ -35,7 +35,6 @@
       gap: 15px;
       width: 100%;
       max-width: 1000px;
-      position: relative; /* To position the loading spinner inside this container */
     }
 
     .gallery-item {
@@ -66,15 +65,14 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    /* Spinner centered within the gallery container */
     .spinner {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 50px;
-      height: 50px;
-      margin: -25px 0 0 -25px;
-      border: 5px solid #ccc;
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
+      border: 4px solid #ccc;
       border-top-color: #333;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -161,10 +159,7 @@
 
   <a href="index.html">📷 Go Back to Upload</a>
   <h1>Uploaded Photos</h1>
-  <div class="gallery" id="gallery">
-    <!-- Spinner is here and will be removed after images are loaded -->
-    <div class="spinner" id="loading-spinner"></div>
-  </div>
+  <div class="gallery" id="gallery">Loading...</div>
 
   <div id="modal" class="modal">
     <a href="#" class="close-btn">&times;</a>
@@ -196,10 +191,10 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
-    const loadingSpinner = document.getElementById('loading-spinner');
-
     let images = [];
     let currentIndex = 0;
+
+    gallery.innerHTML = '';
 
     async function loadImages() {
       try {
@@ -209,72 +204,44 @@
         for (const itemRef of result.items) {
           const url = await getDownloadURL(itemRef);
           images.push(url);
+
+          const galleryItem = document.createElement('div');
+          galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
+
+          const spinner = document.createElement('div');
+          spinner.classList.add('spinner');
+
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = "Uploaded photo";
+          img.onload = () => {
+            spinner.remove();
+            img.style.display = 'block';
+          };
+          img.onerror = () => {
+            spinner.remove();
+            console.error(`Failed to load image: ${url}`);
+            img.style.display = 'none';
+          };
+          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
+
+          galleryItem.appendChild(spinner);
+          galleryItem.appendChild(img);
+          gallery.appendChild(galleryItem);
         }
 
-        renderGallery();
+        if (result.items.length === 0) {
+          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
+        }
       } catch (error) {
         console.error("Failed to load images:", error);
         gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
       }
     }
 
-    function renderGallery() {
-      gallery.innerHTML = ''; // Clear the gallery container
-
-      images.forEach((imageUrl, index) => {
-        const galleryItem = document.createElement('div');
-        galleryItem.classList.add('gallery-item', 'fade-in');
-        galleryItem.setAttribute('data-index', index);
-
-        const spinner = document.createElement('div');
-        spinner.classList.add('spinner');
-
-        const img = document.createElement('img');
-        img.dataset.src = imageUrl; // Set lazy-loaded image URL
-        img.alt = "Uploaded photo";
-        img.classList.add('lazy');
-        
-        // Image lazy loading function
-        img.onload = () => {
-          spinner.remove();
-          img.style.display = 'block';
-        };
-        
-        img.addEventListener('click', () => openModal(imageUrl, index));
-        
-        galleryItem.appendChild(spinner);
-        galleryItem.appendChild(img);
-        gallery.appendChild(galleryItem);
-      });
-
-      // Trigger lazy loading on scroll
-      lazyLoadImages();
-      window.addEventListener('scroll', lazyLoadImages);
-
-      // Hide the spinner once images are loaded
-      loadingSpinner.style.display = 'none';
-    }
-
-    // Lazy load images when they are in the viewport
-    function lazyLoadImages() {
-      const imagesToLoad = document.querySelectorAll('img.lazy');
-      imagesToLoad.forEach(img => {
-        if (isInViewport(img)) {
-          img.src = img.dataset.src; // Load image
-          img.classList.remove('lazy');
-        }
-      });
-    }
-
-    // Check if the image is in the viewport
-    function isInViewport(img) {
-      const rect = img.getBoundingClientRect();
-      return rect.top <= window.innerHeight && rect.bottom >= 0;
-    }
-
     function openModal(url, index) {
-      modalImage.src = url;
       currentIndex = index;
+      modalImage.src = url;
       window.location.hash = 'modal';
     }
 
