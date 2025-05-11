@@ -153,26 +153,6 @@
       font-size: 32px;
       text-decoration: none;
     }
-
-    .pagination {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .pagination button {
-      background-color: #0077cc;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .pagination button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
   </style>
 </head>
 <body>
@@ -186,11 +166,6 @@
     <img id="modalImage" src="" alt="Full View" />
     <span class="arrow arrow-left" id="prevArrow">&#8592;</span>
     <span class="arrow arrow-right" id="nextArrow">&#8594;</span>
-  </div>
-
-  <div class="pagination" id="pagination">
-    <button id="prevPageBtn" disabled>Previous</button>
-    <button id="nextPageBtn">Next</button>
   </div>
 
   <script type="module">
@@ -216,12 +191,9 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
-    const prevPageBtn = document.getElementById('prevPageBtn');
-    const nextPageBtn = document.getElementById('nextPageBtn');
 
     let images = [];
-    let currentPage = 1;
-    const imagesPerPage = 12;
+    let currentIndex = 0;
 
     async function loadImages() {
       try {
@@ -234,7 +206,6 @@
         }
 
         renderGallery();
-        updatePaginationButtons();
       } catch (error) {
         console.error("Failed to load images:", error);
         gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
@@ -243,54 +214,77 @@
 
     function renderGallery() {
       gallery.innerHTML = '';
-      const startIdx = (currentPage - 1) * imagesPerPage;
-      const endIdx = Math.min(startIdx + imagesPerPage, images.length);
 
-      for (let i = startIdx; i < endIdx; i++) {
-        const fullImageUrl = images[i];
-
+      images.forEach((imageUrl, index) => {
         const galleryItem = document.createElement('div');
         galleryItem.classList.add('gallery-item', 'fade-in');
+        galleryItem.setAttribute('data-index', index);
 
         const spinner = document.createElement('div');
         spinner.classList.add('spinner');
 
         const img = document.createElement('img');
-        img.src = fullImageUrl;
+        img.dataset.src = imageUrl; // Set lazy-loaded image URL
         img.alt = "Uploaded photo";
+        img.classList.add('lazy');
+        
+        // Image lazy loading function
         img.onload = () => {
           spinner.remove();
           img.style.display = 'block';
         };
-        img.addEventListener('click', () => openModal(fullImageUrl, images.indexOf(fullImageUrl)));
-
+        
+        img.addEventListener('click', () => openModal(imageUrl, index));
+        
         galleryItem.appendChild(spinner);
         galleryItem.appendChild(img);
         gallery.appendChild(galleryItem);
-      }
+      });
+
+      // Trigger lazy loading on scroll
+      lazyLoadImages();
+      window.addEventListener('scroll', lazyLoadImages);
+    }
+
+    // Lazy load images when they are in the viewport
+    function lazyLoadImages() {
+      const imagesToLoad = document.querySelectorAll('img.lazy');
+      imagesToLoad.forEach(img => {
+        if (isInViewport(img)) {
+          img.src = img.dataset.src; // Load image
+          img.classList.remove('lazy');
+        }
+      });
+    }
+
+    // Check if the image is in the viewport
+    function isInViewport(img) {
+      const rect = img.getBoundingClientRect();
+      return rect.top <= window.innerHeight && rect.bottom >= 0;
     }
 
     function openModal(url, index) {
       modalImage.src = url;
+      currentIndex = index;
       window.location.hash = 'modal';
     }
 
-    function updatePaginationButtons() {
-      prevPageBtn.disabled = currentPage === 1;
-      nextPageBtn.disabled = currentPage * imagesPerPage >= images.length;
+    function showNextImage() {
+      if (currentIndex < images.length - 1) {
+        currentIndex++;
+        modalImage.src = images[currentIndex];
+      }
     }
 
-    prevPageBtn.addEventListener('click', () => {
-      currentPage--;
-      renderGallery();
-      updatePaginationButtons();
-    });
+    function showPrevImage() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        modalImage.src = images[currentIndex];
+      }
+    }
 
-    nextPageBtn.addEventListener('click', () => {
-      currentPage++;
-      renderGallery();
-      updatePaginationButtons();
-    });
+    nextArrow.addEventListener('click', showNextImage);
+    prevArrow.addEventListener('click', showPrevImage);
 
     loadImages();
   </script>
