@@ -231,8 +231,15 @@
 
         for (const itemRef of result.items) {
           const url = await getDownloadURL(itemRef);
-          images.push(url);
+          images.push({ url, name: itemRef.name });
+        }
 
+        // Sort images by their names, which are timestamps
+        images.sort((a, b) => b.name.localeCompare(a.name));
+
+        gallery.innerHTML = ''; // Clear any existing content
+
+        for (const image of images) {
           const galleryItem = document.createElement('div');
           galleryItem.classList.add('gallery-item'); 
 
@@ -240,18 +247,18 @@
           spinner.classList.add('spinner');
 
           const img = document.createElement('img');
-          img.src = url;
-          img.alt = "Uploaded photo";
+          img.src = image.url;
+          img.alt = "";  // Removed the "Uploaded photo" text
           img.onload = () => {
             spinner.remove();
             img.style.display = 'block';
           };
           img.onerror = () => {
             spinner.remove();
-            console.error(`Failed to load image: ${url}`);
+            console.error(`Failed to load image: ${image.url}`);
             img.style.display = 'none';
           };
-          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
+          img.addEventListener('click', () => openModal(image.url, images.indexOf(image)));
 
           galleryItem.appendChild(spinner);
           galleryItem.appendChild(img);
@@ -278,14 +285,14 @@
     function showNextImage() {
       if (currentIndex < images.length - 1) {
         currentIndex++;
-        modalImage.src = images[currentIndex];
+        modalImage.src = images[currentIndex].url;
       }
     }
 
     function showPrevImage() {
       if (currentIndex > 0) {
         currentIndex--;
-        modalImage.src = images[currentIndex];
+        modalImage.src = images[currentIndex].url;
       }
     }
 
