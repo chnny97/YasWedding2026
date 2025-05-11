@@ -2,67 +2,100 @@
 <html>
 <head>
   <title>Sarah & Doug 2026</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    .status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    a {
+      display: block;
+      margin-top: 30px;
+      text-decoration: none;
+      color: #007bff;
+    }
+  </style>
 </head>
 <body>
-  <p><a href="gallery.html">📸 View Uploaded Photos</a></p>
+  <h1>Upload a Photo</h1>
 
-  <h2>Take a Photo</h2>
-  <input type="file" accept="image/*" capture="environment" id="photoInput" />
-  <p id="status"></p>
+  <!-- Hidden Inputs -->
+  <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
+  <input type="file" accept="image/*" id="libraryInput" style="display: none;">
 
-  <!-- Firebase SDKs -->
+  <!-- Visible Buttons -->
+  <button onclick="document.getElementById('cameraInput').click()">📷 Take a Photo</button>
+  <button onclick="document.getElementById('libraryInput').click()">🖼 Choose from Library</button>
+
+  <div class="status" id="status"></div>
+
+  <a href="gallery.html">📸 View Uploaded Gallery</a>
+
   <script type="module">
-    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
-    // Your Firebase config (replace with your values)
     const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
 
-    apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
-
-    authDomain: "sarah-and-doug-2025.firebaseapp.com",
-
-    projectId: "sarah-and-doug-2025",
-
-    storageBucket: "sarah-and-doug-2025.firebasestorage.app",
-
-    messagingSenderId: "1030871235471",
-
-    appId: "1:1030871235471:web:40220c1c2a71082e2769fa",
-
-    measurementId: "G-XJJL710JTX"
-
-  };
-
-
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
+    const statusEl = document.getElementById('status');
 
-    // DOM Elements
-    const input = document.getElementById('photoInput');
-    const status = document.getElementById('status');
+    // Event listeners for both inputs
+    document.getElementById('cameraInput').addEventListener('change', handleUpload);
+    document.getElementById('libraryInput').addEventListener('change', handleUpload);
 
-    input.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
+    async function handleUpload(event) {
+      const file = event.target.files[0];
       if (!file) return;
 
-      status.textContent = 'Uploading...';
-
-      // Create a unique file name
-      const fileName = `photo_${Date.now()}.jpg`;
-      const storageRef = ref(storage, `photos/${fileName}`);
+      const timestamp = new Date().toISOString();
+      const fileRef = ref(storage, 'photos/' + timestamp + '_' + file.name);
 
       try {
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-        status.innerHTML = `✅ Uploaded! <br><a href="${downloadURL}" target="_blank">View Image</a>`;
-      } catch (error) {
-        console.error(error);
-        status.textContent = '❌ Upload failed';
+        statusEl.textContent = 'Uploading...';
+        await uploadBytes(fileRef, file);
+        statusEl.textContent = '✅ Upload successful!';
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = '❌ Upload failed.';
       }
-    });
+    }
   </script>
 </body>
 </html>
