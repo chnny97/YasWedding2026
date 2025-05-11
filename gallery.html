@@ -44,7 +44,7 @@
       overflow: hidden;
       border-radius: 8px;
       background-color: #eee;
-      opacity: 0; /* Start transparent for animation */
+      opacity: 0;
     }
 
     .gallery-item img {
@@ -65,7 +65,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    /* Spinner */
     .spinner {
       position: absolute;
       top: 50%;
@@ -84,7 +83,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Fade-in animation */
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -100,7 +98,6 @@
       animation: fadeIn 0.5s ease forwards;
     }
 
-    /* Modal Styles */
     .modal {
       position: fixed;
       top: 0;
@@ -164,7 +161,6 @@
   <h1>Uploaded Photos</h1>
   <div class="gallery" id="gallery">Loading...</div>
 
-  <!-- Modal -->
   <div id="modal" class="modal">
     <a href="#" class="close-btn">&times;</a>
     <img id="modalImage" src="" alt="Full View" />
@@ -210,20 +206,17 @@
           images.push(url);
 
           const galleryItem = document.createElement('div');
-          galleryItem.classList.add('gallery-item');
+          galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
 
-          // Spinner
           const spinner = document.createElement('div');
           spinner.classList.add('spinner');
 
-          // Image
           const img = document.createElement('img');
           img.src = url;
           img.alt = "Uploaded photo";
           img.onload = () => {
             spinner.remove();
             img.style.display = 'block';
-            galleryItem.classList.add('fade-in'); // Apply fade to container
           };
           img.onerror = () => {
             spinner.remove();
