@@ -229,8 +229,8 @@
         images = [];
 
         for (const itemRef of result.items) {
-          const fullImageUrl = await getDownloadURL(itemRef);
-          images.push(fullImageUrl);
+          const url = await getDownloadURL(itemRef);
+          images.push(url);
         }
 
         renderGallery();
@@ -250,18 +250,19 @@
         const fullImageUrl = images[i];
 
         const galleryItem = document.createElement('div');
-        galleryItem.classList.add('gallery-item', 'fade-in'); // Fade-in immediately
+        galleryItem.classList.add('gallery-item', 'fade-in');
 
         const spinner = document.createElement('div');
         spinner.classList.add('spinner');
 
         const img = document.createElement('img');
-        img.src = fullImageUrl;  // Use full image as preview
+        img.src = fullImageUrl;
         img.alt = "Uploaded photo";
-
-        img.addEventListener('click', () => {
-          openModal(fullImageUrl, images.indexOf(fullImageUrl));
-        });
+        img.onload = () => {
+          spinner.remove();
+          img.style.display = 'block';
+        };
+        img.addEventListener('click', () => openModal(fullImageUrl, images.indexOf(fullImageUrl)));
 
         galleryItem.appendChild(spinner);
         galleryItem.appendChild(img);
@@ -271,7 +272,6 @@
 
     function openModal(url, index) {
       modalImage.src = url;
-      currentIndex = index;
       window.location.hash = 'modal';
     }
 
@@ -281,19 +281,15 @@
     }
 
     prevPageBtn.addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderGallery();
-        updatePaginationButtons();
-      }
+      currentPage--;
+      renderGallery();
+      updatePaginationButtons();
     });
 
     nextPageBtn.addEventListener('click', () => {
-      if (currentPage * imagesPerPage < images.length) {
-        currentPage++;
-        renderGallery();
-        updatePaginationButtons();
-      }
+      currentPage++;
+      renderGallery();
+      updatePaginationButtons();
     });
 
     loadImages();
