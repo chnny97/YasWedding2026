@@ -177,7 +177,9 @@
 
   <a href="index.html">📷 Go Back to Upload</a>
   <h1>Uploaded Photos</h1>
-  <div class="gallery" id="gallery">Loading...</div>
+  <div class="gallery" id="gallery">
+    <div class="spinner" id="loadingSpinner"></div>
+  </div>
 
   <div id="modal" class="modal">
     <a href="#" class="close-btn">&times;</a>
@@ -209,6 +211,7 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
+    const loadingSpinner = document.getElementById('loadingSpinner');
     let images = [];
     let currentIndex = 0;
 
@@ -256,6 +259,8 @@
 
         if (result.items.length === 0) {
           gallery.innerHTML = "<p>No photos uploaded yet.</p>";
+        } else {
+          loadingSpinner.style.display = 'none'; // Hide the loading spinner once images are loaded
         }
       } catch (error) {
         console.error("Failed to load images:", error);
