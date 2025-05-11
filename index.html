@@ -2,142 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sarah & Doug's Wedding 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photo Upload</title>
   <style>
+    /* General body styles */
     body {
-      font-family: 'Georgia', serif;
-      padding: 30px;
-      text-align: center;
-      background-color: #f4f1eb; /* Soft off-white background */
-      color: #3c3c3c; /* Dark gray text for good contrast */
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f4f1;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
 
     h1 {
-      font-size: 36px;
-      color: #4b8c43; /* Earthy green for header */
-      font-family: 'Palatino', serif;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      font-size: 28px;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #3b5c3b;
     }
 
-    h2 {
-      font-size: 22px;
-      color: #6d8e4d; /* Lighter green for subheaders */
-      margin-top: 20px;
-      font-family: 'Verdana', sans-serif;
-    }
-
-    p {
-      font-size: 18px;
-      color: #555;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    button {
-      padding: 12px 30px;
-      font-size: 18px;
-      margin: 12px 10px;
-      border-radius: 8px;
-      border: none;
-      background-color: #6d8e4d; /* Soft earthy green for button */
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Verdana', sans-serif;
-    }
-
-    button:hover {
-      background-color: #4b8c43; /* Darker green for hover effect */
-    }
-
-    .status {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #333;
-      font-family: 'Verdana', sans-serif;
-    }
-
-    .progress-container {
-      margin-top: 20px;
+    .featured-photo {
+      margin-bottom: 30px;
+      text-align: center;
       width: 100%;
-      background-color: #e0e0e0; /* Light gray background */
+    }
+
+    .featured-photo img {
+      max-width: 100%;
+      max-height: 400px;
+      object-fit: cover;
       border-radius: 8px;
-      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-    .progress-bar {
-      height: 10px;
-      width: 0%;
-      background-color: #6d8e4d; /* Earthy green progress bar */
-      transition: width 0.4s ease;
+    /* Form styles */
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    a {
-      display: block;
-      margin-top: 30px;
-      text-decoration: none;
-      color: #4b8c43; /* Green for link color */
-      font-size: 20px;
-      font-family: 'Verdana', sans-serif;
+    .upload-form input[type="file"] {
+      margin-bottom: 20px;
     }
 
-    a:hover {
-      color: #3c6e2f; /* Darker green for hover */
+    .upload-btn {
+      padding: 10px 20px;
+      background-color: #3b5c3b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
-    /* Styling for mobile devices */
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 28px;
-      }
-
-      h2 {
-        font-size: 18px;
-      }
-
-      button {
-        font-size: 16px;
-        padding: 10px 20px;
-      }
-
-      .status {
-        font-size: 18px;
-      }
-
-      a {
-        font-size: 18px;
-      }
+    .upload-btn:hover {
+      background-color: #2a3c2a;
     }
-
   </style>
 </head>
 <body>
-  <h1>Sarah & Doug's Wedding 2026</h1>
-  <h2>Capture your memories with us!</h2>
 
-  <!-- Hidden Inputs for File Upload -->
-  <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
-  <input type="file" accept="image/*" id="libraryInput" multiple style="display: none;">
-
-  <!-- Visible Buttons for Upload -->
-  <button onclick="document.getElementById('cameraInput').click()">📷 Take a Photo</button>
-  <button onclick="document.getElementById('libraryInput').click()">🖼 Choose from Library</button>
-
-  <div class="status" id="status"></div>
-
-  <!-- Progress Bar -->
-  <div class="progress-container" id="progressContainer" style="display: none;">
-    <div class="progress-bar" id="progressBar"></div>
+  <h1>Upload Your Photos</h1>
+  
+  <!-- Featured photo section -->
+  <div class="featured-photo">
+    <h2>Featured Photo</h2>
+    <img id="featuredPhoto" src="loading.jpg" alt="Featured Photo" />
   </div>
 
-  <a href="gallery.html">📸 View Uploaded Gallery</a>
+  <div class="upload-form">
+    <input type="file" id="fileInput" />
+    <button class="upload-btn" id="uploadBtn">Upload Photo</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
@@ -151,49 +94,47 @@
 
     const app = initializeApp(firebaseConfig);
     const storage = getStorage(app);
-    const statusEl = document.getElementById('status');
-    const progressContainer = document.getElementById('progressContainer');
-    const progressBar = document.getElementById('progressBar');
+    const photosRef = ref(storage, 'photos');
 
-    // Event listeners for both inputs
-    document.getElementById('cameraInput').addEventListener('change', handleUpload);
-    document.getElementById('libraryInput').addEventListener('change', handleUpload);
+    const featuredPhoto = document.getElementById('featuredPhoto');
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
 
-    async function handleUpload(event) {
-      const files = event.target.files;
-      if (!files.length) return;
+    // Load images and display a random featured photo
+    async function loadFeaturedPhoto() {
+      try {
+        const result = await listAll(photosRef);
+        const imageUrls = [];
 
-      // Show progress container
-      progressContainer.style.display = 'block';
-      statusEl.textContent = 'Uploading...';
+        for (const itemRef of result.items) {
+          const url = await getDownloadURL(itemRef);
+          imageUrls.push(url);
+        }
 
-      let uploadedCount = 0;
-
-      // Loop through all selected files
-      for (const file of files) {
-        const timestamp = new Date().toISOString();
-        const fileRef = ref(storage, 'photos/' + timestamp + '_' + file.name);
-
-        const uploadTask = uploadBytesResumable(fileRef, file);
-
-        uploadTask.on('state_changed', (snapshot) => {
-          // Get upload progress
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          progressBar.style.width = progress + '%'; // Update progress bar
-        }, (error) => {
-          // Handle error
-          console.error(error);
-          statusEl.textContent = '❌ Upload failed.';
-        }, () => {
-          // Upload completed successfully
-          uploadedCount++;
-          if (uploadedCount === files.length) {
-            statusEl.textContent = '✅ Upload successful! Thanks for making a special memory with us!';
-            progressContainer.style.display = 'none';
-          }
-        });
+        if (imageUrls.length > 0) {
+          const randomIndex = Math.floor(Math.random() * imageUrls.length);
+          featuredPhoto.src = imageUrls[randomIndex];
+        } else {
+          featuredPhoto.src = 'no-photo.jpg'; // Fallback if no images are uploaded
+        }
+      } catch (error) {
+        console.error("Error loading images: ", error);
+        featuredPhoto.src = 'error.jpg'; // Fallback for error loading
       }
     }
+
+    // Call the loadFeaturedPhoto function on page load
+    loadFeaturedPhoto();
+
+    // Upload functionality (this is just a placeholder for actual upload code)
+    uploadBtn.addEventListener('click', () => {
+      const file = fileInput.files[0];
+      if (file) {
+        // Upload logic (not implemented here)
+        console.log('Uploading:', file);
+      }
+    });
   </script>
+
 </body>
 </html>
