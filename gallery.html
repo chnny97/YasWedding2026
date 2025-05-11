@@ -2,38 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Photo Gallery - Sarah & Doug's Wedding 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photo Gallery</title>
   <style>
     body {
-      font-family: 'Georgia', serif;
-      padding: 30px;
-      text-align: center;
-      background-color: #f4f1eb; /* Soft off-white background */
-      color: #3c3c3c; /* Dark gray text for good contrast */
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
     }
 
     h1 {
-      font-size: 36px;
-      color: #4b8c43; /* Earthy green for header */
-      font-family: 'Palatino', serif;
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    a {
+      display: inline-block;
       margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      font-size: 16px;
+      color: #0077cc;
+      text-decoration: none;
     }
 
-    h2 {
-      font-size: 22px;
-      color: #6d8e4d; /* Lighter green for subheaders */
-      margin-top: 20px;
-      font-family: 'Verdana', sans-serif;
-    }
-
-    p {
+    #photoCount {
       font-size: 18px;
-      color: #555;
-      line-height: 1.6;
       margin-bottom: 20px;
+      color: #555;
     }
 
     .gallery {
@@ -42,8 +41,6 @@
       gap: 15px;
       width: 100%;
       max-width: 1000px;
-      margin: 0 auto;
-      margin-top: 30px;
     }
 
     .gallery-item {
@@ -52,7 +49,7 @@
       padding-top: 100%;
       overflow: hidden;
       border-radius: 8px;
-      background-color: #e0e0e0;
+      background-color: #eee;
       opacity: 0;
     }
 
@@ -90,6 +87,21 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
     }
 
     .modal {
@@ -148,45 +160,24 @@
       text-decoration: none;
     }
 
-    .status {
-      font-size: 20px;
-      color: #333;
-      margin-top: 30px;
-    }
-
-    .total-count {
-      font-size: 20px;
-      color: #6d8e4d; /* Lighter green for count */
-      margin-top: 20px;
-    }
-
-    /* Styling for mobile devices */
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 28px;
-      }
-
-      h2 {
-        font-size: 18px;
-      }
-
+    @media (max-width: 768px) {
       .gallery {
         grid-template-columns: repeat(2, 1fr);
       }
-
-      .status, .total-count {
-        font-size: 18px;
-      }
     }
 
+    @media (max-width: 480px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Sarah & Doug's Wedding 2026</h1>
-  <h2>Uploaded Memories</h2>
-  
-  <p class="total-count" id="totalCount">Loading total count...</p>
 
+  <a href="index.html">📷 Go Back to Upload</a>
+  <h1>Uploaded Photos</h1>
+  <div id="photoCount"></div>
   <div class="gallery" id="gallery">Loading...</div>
 
   <div id="modal" class="modal">
@@ -219,7 +210,8 @@
     const modalImage = document.getElementById('modalImage');
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
-    const totalCountEl = document.getElementById('totalCount');
+    const countElement = document.getElementById('photoCount');
+
     let images = [];
     let currentIndex = 0;
 
@@ -230,12 +222,20 @@
         const result = await listAll(photosRef);
         images = [];
 
-        for (const itemRef of result.items) {
+        // Show count
+        countElement.textContent = `Total Memories made: ${result.items.length}`;
+
+        if (result.items.length === 0) {
+          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
+          return;
+        }
+
+        for (const itemRef of result.items.reverse()) {
           const url = await getDownloadURL(itemRef);
           images.push(url);
 
           const galleryItem = document.createElement('div');
-          galleryItem.classList.add('gallery-item'); 
+          galleryItem.classList.add('gallery-item', 'fade-in');
 
           const spinner = document.createElement('div');
           spinner.classList.add('spinner');
@@ -257,12 +257,6 @@
           galleryItem.appendChild(spinner);
           galleryItem.appendChild(img);
           gallery.appendChild(galleryItem);
-        }
-
-        totalCountEl.textContent = `Total Memories Made: ${result.items.length}`;
-
-        if (result.items.length === 0) {
-          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
         }
       } catch (error) {
         console.error("Failed to load images:", error);
