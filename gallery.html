@@ -61,7 +61,7 @@
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:18px}
     .photo{background:#fff;border-radius:8px;overflow:hidden;display:block;border:1px solid rgba(0,0,0,0.04);box-shadow:0 8px 20px rgba(20,20,18,0.04);text-decoration:none;color:inherit}
     .photo img{width:100%;height:160px;object-fit:cover;display:block;filter:contrast(0.98) saturate(0.98)}
- 
+    .photo .caption{font-size:12px;color:var(--muted);padding:8px 10px;text-align:left}
 
     /* Loading spinner & fade */
     .spinner{position:relative;width:36px;height:36px;border:4px solid #e6e6e6;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:10px auto}
@@ -103,6 +103,9 @@
 
       <nav aria-label="Main">
         <a href="index.html">Home</a>
+        <a href="#">Our Story</a>
+        <a href="#">Q + A</a>
+        <a href="#">Travel</a>
         <a href="gallery.html" class="active" aria-current="page">Gallery</a>
         <a href="food.html">Food</a>
       </nav>
@@ -218,11 +221,11 @@
         img.loading = 'lazy';
         img.dataset.index = i;
 
-        const  = document.createElement('div');
-        .className = '';
+        const caption = document.createElement('div');
+        caption.className = 'caption';
 
-        // Friendly : remove timestamp-like prefix if present
-        .textContent = item.name.replace(/^[0-9T-_:]+_?/, '').replace(/_/g, ' ');
+        // Friendly caption: remove timestamp-like prefix if present
+        caption.textContent = item.name.replace(/^[0-9T-_:]+_?/, '').replace(/_/g, ' ');
 
         img.addEventListener('click', (e) => {
           e.preventDefault();
@@ -230,7 +233,7 @@
         });
 
         link.appendChild(img);
-        link.appendChild();
+        link.appendChild(caption);
         galleryGrid.appendChild(link);
       }
     }
