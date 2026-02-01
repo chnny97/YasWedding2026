@@ -124,7 +124,7 @@
     nav a {
       color:var(--muted);
       text-decoration:none;
-      padding:6px 4px;
+      padding:6px 8px;
       border-bottom:2px solid transparent;
     }
     nav a.active, nav a:hover {
@@ -152,32 +152,35 @@
       justify-content:center;
     }
 
-    button.primary{
-      background:var(--accent);
-      color:white;
-      border: none;
+    /* Unified button style */
+    .btn{
       padding: 12px 22px;
       border-radius: 10px;
       font-size:16px;
       cursor:pointer;
       font-weight:600;
-      transition: transform .12s ease, box-shadow .12s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-width:160px; /* ensure equal size */
+      justify-content:center;
+      text-decoration:none;
+      border: none;
+    }
+    .btn.primary{
+      background:var(--accent);
+      color:white;
       box-shadow: 0 6px 18px rgba(109,142,77,0.12);
-      font-family: 'Montserrat', sans-serif;
     }
-    button.primary:disabled{
-      opacity:.55;
-      cursor:default;
-      transform:none;
-    }
-    button.ghost{
+    .btn.ghost{
       background:transparent;
       color:var(--accent-dark);
       border:1px solid rgba(71,83,66,0.08);
-      padding:10px 18px;
-      border-radius:10px;
-      font-weight:600;
-      cursor:pointer;
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:default;
+      transform:none;
     }
 
     .status{
@@ -228,19 +231,6 @@
     }
     .preview img{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* Gallery link */
-    .gallery-link{
-      margin-top:1.25rem;
-      display:inline-block;
-      color:var(--accent-dark);
-      text-decoration:none;
-      padding:8px 12px;
-      border-radius:8px;
-      border:1px solid rgba(109,142,77,0.06);
-      background:transparent;
-      font-weight:600;
-    }
-
     /* Footer ceremony/reception teaser */
     .details{
       margin-top:2.4rem;
@@ -260,6 +250,7 @@
       h1{font-size:22px; letter-spacing:3px}
       .upload-actions{flex-direction:column}
       .preview{width:64px;height:64px}
+      .btn{min-width:unset;width:100%}
     }
   </style>
 </head>
@@ -271,13 +262,15 @@
   <main class="container" role="main">
     <header>
       <h1>SARAH &amp; DOUGLAS</h1>
-      <div class="lead">Saturday, February 28, 2026 — 27 days to go!</div>
+      <div class="lead">Saturday, February 28, 2026</div>
 
       <nav aria-label="Main">
         <a href="#" class="active" aria-current="page">Home</a>
         <a href="#">Our Story</a>
         <a href="#">Q + A</a>
         <a href="#">Travel</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="food.html">Food</a>
       </nav>
     </header>
 
@@ -291,9 +284,8 @@
       <input type="file" accept="image/*" id="libraryInput" multiple style="display:none" aria-hidden="true">
 
       <div class="upload-actions" aria-hidden="false">
-        <button id="takePhoto" class="primary" type="button">📷 Take a Photo</button>
-        <button id="choosePhotos" class="ghost" type="button">🖼 Choose from Library</button>
-        <a class="gallery-link" href="gallery.html" id="viewGallery">📸 View Gallery</a>
+        <button id="takePhoto" class="btn primary" type="button">📷 Take a Photo</button>
+        <button id="choosePhotos" class="btn ghost" type="button">🖼 Choose from Library</button>
       </div>
 
       <!-- Previews -->
