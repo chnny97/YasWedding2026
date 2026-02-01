@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Food &amp; Dinner Menu — Sarah &amp; Douglas</title>
+
+  <!-- Google Fonts (serif headline + neutral sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <meta name="theme-color" content="#f4f1eb">
+
+  <style>
+    :root{
+      --bg: #fbfaf8;
+      --paper: #f4f1eb;
+      --text: #37413a;
+      --muted: #7b8574;
+      --accent: #6d8e4d;
+      --accent-dark: #4b6b39;
+      --max-width: 820px;
+      --gutter: clamp(16px, 3.5vw, 48px);
+      --radius: 12px;
+      --shadow: 0 6px 24px rgba(17,18,15,0.06);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      font-family: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--paper) 100%);
+      padding: calc(var(--gutter) * 1.25);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+    .artwork{position:fixed;top:0;bottom:0;width:34vw;max-width:420px;pointer-events:none;z-index:0;display:flex;align-items:center;justify-content:center}
+    .artwork.left{left:0;background-image: url("https://media-api.xogrp.com/images/6b62ddcd-512a-4ad0-a92a-77882c7b807b");background-repeat:no-repeat;background-position:left center;background-size:contain;transform:translateX(-8%);opacity:.95}
+    .artwork.right{right:0;background-image: url("https://media-api.xogrp.com/images/6b62ddcd-512a-4ad0-a92a-77882c7b807b");background-repeat:no-repeat;background-position:right center;background-size:contain;transform:translateX(8%) scaleX(-1);opacity:.95}
+
+    .container{position:relative;z-index:2;max-width:var(--max-width);width:100%;margin:0 auto;text-align:center;padding: calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);}
+    header{margin-top:6vh;margin-bottom:2.25rem}
+    h1{margin:0;font-family:'Playfair Display',serif;font-weight:400;letter-spacing:6px;font-size:clamp(28px,4.6vw,44px);color:var(--accent-dark);text-transform:uppercase;line-height:1}
+    .lead{margin-top:.6rem;margin-bottom:1rem;color:var(--muted);font-size:clamp(13px,1.6vw,15px);letter-spacing:1px}
+
+    nav{margin-top:1.25rem;display:flex;gap:1rem;justify-content:center;font-size:14px;color:var(--muted)}
+    nav a{color:var(--muted);text-decoration:none;padding:6px 8px;border-bottom:2px solid transparent}
+    nav a.active,nav a:hover{color:var(--accent-dark);border-bottom-color:var(--accent)}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.55));border-radius:var(--radius);padding:calc(var(--gutter) * 0.9);box-shadow:var(--shadow)}
+
+    .menu-section{margin-bottom:20px;text-align:left}
+    .menu-section h3{font-family:'Playfair Display',serif;color:var(--accent-dark);letter-spacing:1.5px;margin:0 0 8px 0}
+    .menu-section ul{margin:0;padding:0 0 0 18px;color:var(--muted)}
+    .menu-item{margin-bottom:6px}
+
+    @media (max-width:880px){.artwork{display:none}.container{padding:0}}
+  </style>
+</head>
+<body>
+  <div class="artwork left" aria-hidden="true"></div>
+  <div class="artwork right" aria-hidden="true"></div>
+
+  <main class="container">
+    <header>
+      <h1>SARAH &amp; DOUGLAS</h1>
+      <div class="lead">Food &amp; Dinner Menu</div>
+
+      <nav aria-label="Main">
+        <a href="index.html">Home</a>
+        <a href="#">Our Story</a>
+        <a href="#">Q + A</a>
+        <a href="#">Travel</a>
+        <a href="gallery.html">Gallery</a>
+        <a href="food.html" class="active" aria-current="page">Food</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <div style="max-width:680px;margin:0 auto;text-align:left">
+        <div class="menu-section">
+          <h3>Starters</h3>
+          <ul>
+            <li class="menu-item"><strong>Heirloom Tomato Salad</strong> — basil, burrata, aged olive oil</li>
+            <li class="menu-item"><strong>Wild Mushroom Tart</strong> — thyme, goat cheese</li>
+          </ul>
+        </div>
+
+        <div class="menu-section">
+          <h3>Mains</h3>
+          <ul>
+            <li class="menu-item"><strong>Roasted Lamb</strong> — rosemary jus, seasonal vegetables</li>
+            <li class="menu-item"><strong>Seared Barramundi</strong> — lemon beurre blanc, baby spinach</li>
+            <li class="menu-item"><strong>Wild Mushroom Risotto (V)</strong> — parmesan, truffle oil</li>
+          </ul>
+        </div>
+
+        <div class="menu-section">
+          <h3>Desserts</h3>
+          <ul>
+            <li class="menu-item"><strong>Lemon Tart</strong> — torched meringue</li>
+            <li class="menu-item"><strong>Chocolate Fondant</strong> — raspberry coulis</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:12px;color:var(--muted);font-size:13px">Please inform us of any dietary requirements in advance. Sample menu — final selections may vary.</div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
