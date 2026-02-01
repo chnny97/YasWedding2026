@@ -1,411 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Photo Gallery</title>
-  <style>
-    /* General body styles */
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f0f4f1;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 30px;
-      text-align: center;
-      color: #3b5c3b;
-    }
-
-    a {
-      display: inline-block;
-      margin-bottom: 30px;
-      font-size: 16px;
-      color: #0077cc;
-      text-decoration: none;
-    }
-
-    /* Gallery styles */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      width: 100%;
-      max-width: 1000px;
-    }
-
-    .gallery-item {
-      position: relative;
-      width: 100%;
-      padding-top: 100%;
-      overflow: hidden;
-      border-radius: 8px;
-      background-color: #f1f1f1;
-      opacity: 0;
-    }
-
-    .gallery-item img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 8px;
-      cursor: pointer;
-      display: none;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .gallery-item img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .spinner {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 30px;
-      height: 30px;
-      margin: -15px 0 0 -15px;
-      border: 4px solid #ccc;
-      border-top-color: #333;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      z-index: 1;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: scale(0.98);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .fade-in {
-      animation: fadeIn 0.5s ease forwards;
-    }
-
-    /* Modal styles */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .modal img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 12px;
-    }
-
-    .modal:target {
-      display: flex;
-    }
-
-    .arrow {
-      position: absolute;
-      top: 50%;
-      color: white;
-      font-size: 30px;
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .arrow:hover {
-      background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .arrow-left {
-      left: 10px;
-    }
-
-    .arrow-right {
-      right: 10px;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      color: white;
-      font-size: 32px;
-      text-decoration: none;
-    }
-
-    /* Pagination */
-    .pagination {
-      margin-top: 20px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .page-btn {
-      background: white;
-      border: 1px solid #ddd;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: #333;
-    }
-
-    .page-btn.active {
-      background: #3b5c3b;
-      color: white;
-      border-color: #3b5c3b;
-    }
-
-    .page-btn:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-
-    /* Responsive design */
-    @media (max-width: 1024px) {
-      .gallery {
-        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns on tablet-sized screens */
-      }
-    }
-
-    @media (max-width: 768px) {
-      .gallery {
-        grid-template-columns: repeat(3, 1fr); /* Ensure 3 columns even on small mobile devices */
-      }
-    }
-  </style>
+    <title>Wedding Gallery</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-
-  <a href="index.html">📷 Go Back to Upload</a>
-  <h1>Uploaded Photos</h1>
-  <div class="gallery" id="gallery">
-    <div class="spinner" id="loadingSpinner"></div>
-  </div>
-
-  <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
-
-  <div id="modal" class="modal">
-    <a href="#" class="close-btn">&times;</a>
-    <img id="modalImage" src="" alt="Full View" />
-    <span class="arrow arrow-left" id="prevArrow">&#8592;</span>
-    <span class="arrow arrow-right" id="nextArrow">&#8594;</span>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
-      authDomain: "sarah-and-doug-2025.firebaseapp.com",
-      projectId: "sarah-and-doug-2025",
-      storageBucket: "sarah-and-doug-2025.firebasestorage.app",
-      messagingSenderId: "1030871235471",
-      appId: "1:1030871235471:web:40220c1c2a71082e2769fa",
-      measurementId: "G-XJJL710JTX"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const storage = getStorage(app);
-    const photosRef = ref(storage, 'photos');
-
-    const gallery = document.getElementById('gallery');
-    const modal = document.getElementById('modal');
-    const modalImage = document.getElementById('modalImage');
-    const prevArrow = document.getElementById('prevArrow');
-    const nextArrow = document.getElementById('nextArrow');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const paginationEl = document.getElementById('pagination');
-
-    const IMAGES_PER_PAGE = 9;
-    let images = [];
-    let currentIndex = 0;
-    let currentPage = 1;
-
-    async function loadImages() {
-      try {
-        const result = await listAll(photosRef);
-        const itemsWithDates = await Promise.all(result.items.map(async (itemRef) => {
-          const metadata = await getMetadata(itemRef);
-          return { itemRef, timeCreated: metadata.timeCreated };
-        }));
-
-        itemsWithDates.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
-
-        // Load URLs first into the images array
-        images = await Promise.all(itemsWithDates.map(async ({ itemRef }) => {
-          return await getDownloadURL(itemRef);
-        }));
-
-        if (images.length === 0) {
-          gallery.innerHTML = "<p>No photos uploaded yet.</p>";
-          loadingSpinner.style.display = 'none';
-          paginationEl.innerHTML = '';
-          return;
+    <h1>Wedding Gallery</h1>
+    <div class="gallery">
+        <figure>
+            <img src="image1.jpg" alt="Description of image 1">
+            <figcaption>Image Caption 1</figcaption>
+        </figure>
+        <figure>
+            <img src="image2.jpg" alt="Description of image 2">
+            <figcaption>Image Caption 2</figcaption>
+        </figure>
+        <figure>
+            <img src="image3.jpg" alt="Description of image 3">
+            <figcaption>Image Caption 3</figcaption>
+        </figure>
+        <!-- Add more images as needed -->
+    </div>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-
-        loadingSpinner.style.display = 'none'; // Hide the loading spinner once images are loaded
-        currentPage = 1;
-        renderGalleryPage();
-        updatePaginationControls();
-
-      } catch (error) {
-        console.error("Failed to load images:", error);
-        gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
-      }
-    }
-
-    function renderGalleryPage() {
-      gallery.innerHTML = '';
-      const startIndex = (currentPage - 1) * IMAGES_PER_PAGE;
-      const endIndex = Math.min(startIndex + IMAGES_PER_PAGE, images.length);
-
-      for (let i = startIndex; i < endIndex; i++) {
-        const url = images[i];
-
-        const galleryItem = document.createElement('div');
-        galleryItem.classList.add('gallery-item', 'fade-in');
-
-        const spinner = document.createElement('div');
-        spinner.classList.add('spinner');
-
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = "Uploaded photo";
-        img.dataset.index = i; // store global index
-        img.onload = () => {
-          spinner.remove();
-          img.style.display = 'block';
-        };
-        img.onerror = () => {
-          spinner.remove();
-          console.error(`Failed to load image: ${url}`);
-          img.style.display = 'none';
-        };
-        img.addEventListener('click', () => openModal(url, parseInt(img.dataset.index, 10)));
-
-        galleryItem.appendChild(spinner);
-        galleryItem.appendChild(img);
-        gallery.appendChild(galleryItem);
-      }
-    }
-
-    function updatePaginationControls() {
-      const totalPages = Math.ceil(images.length / IMAGES_PER_PAGE);
-      paginationEl.innerHTML = '';
-
-      if (totalPages <= 1) return; // no controls needed
-
-      const prevBtn = document.createElement('button');
-      prevBtn.textContent = 'Prev';
-      prevBtn.className = 'page-btn';
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          renderGalleryPage();
-          updatePaginationControls();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        h1 {
+            text-align: center;
         }
-      });
-      paginationEl.appendChild(prevBtn);
-
-      // Simple page number buttons
-      for (let p = 1; p <= totalPages; p++) {
-        const btn = document.createElement('button');
-        btn.textContent = String(p);
-        btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
-        btn.disabled = p === currentPage;
-        btn.addEventListener('click', () => {
-          currentPage = p;
-          renderGalleryPage();
-          updatePaginationControls();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        paginationEl.appendChild(btn);
-      }
-
-      const nextBtn = document.createElement('button');
-      nextBtn.textContent = 'Next';
-      nextBtn.className = 'page-btn';
-      nextBtn.disabled = currentPage === totalPages;
-      nextBtn.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          renderGalleryPage();
-          updatePaginationControls();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-      });
-      paginationEl.appendChild(nextBtn);
-    }
-
-    function openModal(url, index) {
-      currentIndex = index;
-      modalImage.src = url;
-      window.location.hash = 'modal';
-    }
-
-    function showNextImage() {
-      if (currentIndex < images.length - 1) {
-        currentIndex++;
-        modalImage.src = images[currentIndex];
-        // If moved outside current page, update page shown
-        const pageOfIndex = Math.floor(currentIndex / IMAGES_PER_PAGE) + 1;
-        if (pageOfIndex !== currentPage) {
-          currentPage = pageOfIndex;
-          renderGalleryPage();
-          updatePaginationControls();
+        figure {
+            margin: 10px;
+            width: calc(33.33% - 20px);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
         }
-      }
-    }
-
-    function showPrevImage() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        modalImage.src = images[currentIndex];
-        const pageOfIndex = Math.floor(currentIndex / IMAGES_PER_PAGE) + 1;
-        if (pageOfIndex !== currentPage) {
-          currentPage = pageOfIndex;
-          renderGalleryPage();
-          updatePaginationControls();
+        img {
+            max-width: 100%;
+            height: auto;
         }
-      }
-    }
-
-    nextArrow.addEventListener('click', showNextImage);
-    prevArrow.addEventListener('click', showPrevImage);
-
-    loadImages();
-  </script>
+        figcaption {
+            text-align: center;
+            padding: 10px;
+        }
+        @media (max-width: 768px) {
+            figure {
+                width: calc(50% - 20px);
+            }
+        }
+        @media (max-width: 480px) {
+            figure {
+                width: 100%;
+            }
+        }
+    </style>
 </body>
 </html>
