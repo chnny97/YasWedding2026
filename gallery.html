@@ -159,6 +159,36 @@
       text-decoration: none;
     }
 
+    /* Pagination */
+    .pagination {
+      margin-top: 20px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .page-btn {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .page-btn.active {
+      background: #3b5c3b;
+      color: white;
+      border-color: #3b5c3b;
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
     /* Responsive design */
     @media (max-width: 1024px) {
       .gallery {
@@ -180,6 +210,8 @@
   <div class="gallery" id="gallery">
     <div class="spinner" id="loadingSpinner"></div>
   </div>
+
+  <div id="pagination" class="pagination" aria-label="Gallery pagination"></div>
 
   <div id="modal" class="modal">
     <a href="#" class="close-btn">&times;</a>
@@ -212,10 +244,12 @@
     const prevArrow = document.getElementById('prevArrow');
     const nextArrow = document.getElementById('nextArrow');
     const loadingSpinner = document.getElementById('loadingSpinner');
+    const paginationEl = document.getElementById('pagination');
+
+    const IMAGES_PER_PAGE = 9;
     let images = [];
     let currentIndex = 0;
-
-    gallery.innerHTML = '';
+    let currentPage = 1;
 
     async function loadImages() {
       try {
@@ -226,46 +260,113 @@
         }));
 
         itemsWithDates.sort((a, b) => new Date(b.timeCreated) - new Date(a.timeCreated));
-        images = [];
 
-        for (const { itemRef } of itemsWithDates) {
-          const url = await getDownloadURL(itemRef);
-          images.push(url);
+        // Load URLs first into the images array
+        images = await Promise.all(itemsWithDates.map(async ({ itemRef }) => {
+          return await getDownloadURL(itemRef);
+        }));
 
-          const galleryItem = document.createElement('div');
-          galleryItem.classList.add('gallery-item', 'fade-in');
-
-          const spinner = document.createElement('div');
-          spinner.classList.add('spinner');
-
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = "Uploaded photo";
-          img.onload = () => {
-            spinner.remove();
-            img.style.display = 'block';
-          };
-          img.onerror = () => {
-            spinner.remove();
-            console.error(`Failed to load image: ${url}`);
-            img.style.display = 'none';
-          };
-          img.addEventListener('click', () => openModal(url, images.indexOf(url)));
-
-          galleryItem.appendChild(spinner);
-          galleryItem.appendChild(img);
-          gallery.appendChild(galleryItem);
-        }
-
-        if (result.items.length === 0) {
+        if (images.length === 0) {
           gallery.innerHTML = "<p>No photos uploaded yet.</p>";
-        } else {
-          loadingSpinner.style.display = 'none'; // Hide the loading spinner once images are loaded
+          loadingSpinner.style.display = 'none';
+          paginationEl.innerHTML = '';
+          return;
         }
+
+        loadingSpinner.style.display = 'none'; // Hide the loading spinner once images are loaded
+        currentPage = 1;
+        renderGalleryPage();
+        updatePaginationControls();
+
       } catch (error) {
         console.error("Failed to load images:", error);
         gallery.innerHTML = "<p>⚠️ Could not load images. Check Firebase config or permissions.</p>";
       }
+    }
+
+    function renderGalleryPage() {
+      gallery.innerHTML = '';
+      const startIndex = (currentPage - 1) * IMAGES_PER_PAGE;
+      const endIndex = Math.min(startIndex + IMAGES_PER_PAGE, images.length);
+
+      for (let i = startIndex; i < endIndex; i++) {
+        const url = images[i];
+
+        const galleryItem = document.createElement('div');
+        galleryItem.classList.add('gallery-item', 'fade-in');
+
+        const spinner = document.createElement('div');
+        spinner.classList.add('spinner');
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = "Uploaded photo";
+        img.dataset.index = i; // store global index
+        img.onload = () => {
+          spinner.remove();
+          img.style.display = 'block';
+        };
+        img.onerror = () => {
+          spinner.remove();
+          console.error(`Failed to load image: ${url}`);
+          img.style.display = 'none';
+        };
+        img.addEventListener('click', () => openModal(url, parseInt(img.dataset.index, 10)));
+
+        galleryItem.appendChild(spinner);
+        galleryItem.appendChild(img);
+        gallery.appendChild(galleryItem);
+      }
+    }
+
+    function updatePaginationControls() {
+      const totalPages = Math.ceil(images.length / IMAGES_PER_PAGE);
+      paginationEl.innerHTML = '';
+
+      if (totalPages <= 1) return; // no controls needed
+
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = 'Prev';
+      prevBtn.className = 'page-btn';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderGalleryPage();
+          updatePaginationControls();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationEl.appendChild(prevBtn);
+
+      // Simple page number buttons
+      for (let p = 1; p <= totalPages; p++) {
+        const btn = document.createElement('button');
+        btn.textContent = String(p);
+        btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+        btn.disabled = p === currentPage;
+        btn.addEventListener('click', () => {
+          currentPage = p;
+          renderGalleryPage();
+          updatePaginationControls();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        paginationEl.appendChild(btn);
+      }
+
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = 'Next';
+      nextBtn.className = 'page-btn';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderGalleryPage();
+          updatePaginationControls();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      paginationEl.appendChild(nextBtn);
     }
 
     function openModal(url, index) {
@@ -278,6 +379,13 @@
       if (currentIndex < images.length - 1) {
         currentIndex++;
         modalImage.src = images[currentIndex];
+        // If moved outside current page, update page shown
+        const pageOfIndex = Math.floor(currentIndex / IMAGES_PER_PAGE) + 1;
+        if (pageOfIndex !== currentPage) {
+          currentPage = pageOfIndex;
+          renderGalleryPage();
+          updatePaginationControls();
+        }
       }
     }
 
@@ -285,6 +393,12 @@
       if (currentIndex > 0) {
         currentIndex--;
         modalImage.src = images[currentIndex];
+        const pageOfIndex = Math.floor(currentIndex / IMAGES_PER_PAGE) + 1;
+        if (pageOfIndex !== currentPage) {
+          currentPage = pageOfIndex;
+          renderGalleryPage();
+          updatePaginationControls();
+        }
       }
     }
 
