@@ -218,11 +218,11 @@
         img.loading = 'lazy';
         img.dataset.index = i;
 
-        const caption = document.createElement('div');
-        caption.className = 'caption';
+        const  = document.createElement('div');
+        .className = '';
 
-        // Friendly caption: remove timestamp-like prefix if present
-        caption.textContent = item.name.replace(/^[0-9T-_:]+_?/, '').replace(/_/g, ' ');
+        // Friendly : remove timestamp-like prefix if present
+        .textContent = item.name.replace(/^[0-9T-_:]+_?/, '').replace(/_/g, ' ');
 
         img.addEventListener('click', (e) => {
           e.preventDefault();
@@ -230,7 +230,7 @@
         });
 
         link.appendChild(img);
-        link.appendChild(caption);
+        link.appendChild();
         galleryGrid.appendChild(link);
       }
     }
