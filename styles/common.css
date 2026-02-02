@@ -25,7 +25,7 @@ header h1,
   font-family: 'Playfair Display', serif;
   font-weight: 400;
   letter-spacing: 6px;
-  font-size: clamp(28px, 4.6vw, 44px);
+  font-size: clamp(28px, 3.5vw, 44px);
   color: var(--accent-dark);
   text-transform: uppercase;
   line-height: 1;
