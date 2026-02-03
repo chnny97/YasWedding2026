@@ -60,31 +60,3 @@ nav a:hover {
   color: var(--accent-dark);
   border-bottom-color: var(--accent);
 }
-
-/* Footer decorative full-bleed background image */
-:root{
-  --footer-height: 18vh; /* responsive default */
-  --footer-min-height: 120px;
-}
-.site-footer {
-  /* ensure footer truly spans the viewport even when inside centered containers */
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  overflow: hidden;
-  background-color: transparent;
-  z-index: 1;
-}
-.site-footer__bg {
-  background-image: url("https://media-api.xogrp.com/images/6b62ddcd-512a-4ad0-a92a-77882c7b807b");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover; /* cover ensures the image fills and crops appropriately */
-  height: var(--footer-height);
-  min-height: var(--footer-min-height);
-  width: 100%;
-  display: block;
-}
-
-@media (max-width: 420px) {
-  :root{ --footer-height: 28vh; }
-}
