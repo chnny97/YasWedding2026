@@ -7,19 +7,19 @@
     // Your Firebase config (replace with your values)
     const firebaseConfig = {
 
-    apiKey: "AIzaSyBBJJeHURGsBux3bUOZ0o1E9XrUr6etHBs",
+    apiKey: "AIzaSyAJbdkv6haicSTZJ5he3Y7uPO1DhVQZNEk",
 
-    authDomain: "sarah-and-doug-2025.firebaseapp.com",
+    authDomain: "yasmin-s-wedding.firebaseapp.com",
 
-    projectId: "sarah-and-doug-2025",
+    projectId: "yasmin-s-wedding",
 
-    storageBucket: "sarah-and-doug-2025.firebasestorage.app",
+    storageBucket: "yasmin-s-wedding.firebasestorage.app",
 
-    messagingSenderId: "1030871235471",
+    messagingSenderId: "467282654791",
 
-    appId: "1:1030871235471:web:40220c1c2a71082e2769fa",
+    appId: "1:467282654791:web:c60c1eb3d34182ff292362",
 
-    measurementId: "G-XJJL710JTX"
+    measurementId: "G-1HM71Y4FJ6"
 
   };
 
