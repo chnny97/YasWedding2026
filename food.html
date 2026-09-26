@@ -16,7 +16,6 @@
   <meta name="theme-color" content="#f4f1eb">
 
   <style>
-    /* Page-specific styles (design tokens and header styles now in common.css) */
     :root{
       --shadow: 0 6px 24px rgba(17,18,15,0.06);
     }
@@ -35,17 +34,61 @@
       justify-content:center;
     }
 
-   
+    .container{
+      position:relative;
+      z-index:2;
+      max-width:var(--max-width);
+      width:100%;
+      margin:0 auto;
+      text-align:center;
+      padding: calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);
+    }
 
-    .container{position:relative;z-index:2;max-width:var(--max-width);width:100%;margin:0 auto;text-align:center;padding: calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.55));border-radius:var(--radius);padding:calc(var(--gutter) * 0.9);box-shadow:var(--shadow)}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.55));
+      border-radius:var(--radius);
+      padding:calc(var(--gutter) * 0.9);
+      box-shadow:var(--shadow);
+      max-width:680px;
+      margin:0 auto;
+    }
 
-    .menu-section{margin-bottom:20px;text-align:left}
-    .menu-section h3{font-family:'Playfair Display',serif;color:var(--accent-dark);letter-spacing:1.5px;margin:0 0 8px 0}
-    .menu-section ul{margin:0;padding:0 0 0 18px;color:var(--muted)}
-    .menu-item{margin-bottom:6px}
+    .menu-section{
+      margin-bottom:20px;
+      text-align:left;
+    }
 
-    @media (max-width:880px){.artwork{display:none}.container{padding:0}}
+    .menu-section h3{
+      font-family:'Playfair Display',serif;
+      color:var(--accent-dark);
+      letter-spacing:1.5px;
+      margin:0 0 8px 0;
+      font-size:1.2rem;
+    }
+
+    .menu-section ul{
+      margin:0;
+      padding:0 0 0 18px;
+      color:var(--muted);
+    }
+
+    .menu-item{
+      margin-bottom:6px;
+      line-height:1.5;
+    }
+
+    .note{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    @media (max-width:880px){
+      .artwork{display:none}
+      .container{padding:0}
+      body{padding:24px}
+    }
   </style>
 </head>
 <body>
@@ -54,8 +97,8 @@
 
   <main class="container">
     <header>
-      <h1>SARAH &amp; DOUGLAS</h1>
-      <div class="lead">Saturday, February 28, 2026</div>
+      <h1>YASMIN &amp; AARON</h1>
+      <div class="lead">Saturday, October 17, 2026</div>
 
       <nav aria-label="Main">
         <a href="index.html">Home</a>
@@ -65,27 +108,27 @@
     </header>
 
     <section class="card">
-      <div style="max-width:680px;margin:0 auto;text-align:left">
+      <div style="margin:0 auto;text-align:left">
         <div class="menu-section">
           <h3>Starters</h3>
           <ul>
-            <li class="menu-item">Smoked Salmon & Cream Cheese Tartlet with Baby Capers</li>
+            <li class="menu-item">Smoked Salmon &amp; Cream Cheese Tartlet with Baby Capers</li>
             <li class="menu-item">Prosciutto and Goats Cheese Wraps with Roasted Capsicum <strong>(GF)</strong></li>
             <li class="menu-item">Bite-Size Beef Meatballs with Parmesan and Parsley <strong>(GF)</strong></li>
             <li class="menu-item">3 Cheese Arancini <strong>(V)</strong></li>
-            <li class="menu-item">Crostini with Pear, Gorgonzola & Pink Peppercorns <strong>(V)</strong></li>
+            <li class="menu-item">Crostini with Pear, Gorgonzola &amp; Pink Peppercorns <strong>(V)</strong></li>
           </ul>
         </div>
 
         <div class="menu-section">
           <h3>Pizza</h3>
           <ul>
-          <li class="menu-item">Margherita <strong>(V)</strong></li>
+            <li class="menu-item">Margherita <strong>(V)</strong></li>
             <li class="menu-item">Hawaiian</li>
             <li class="menu-item">BBQ Chicken</li>
-            <li class="menu-item">Hot Salami, Chilli & Honey</li>
-            <li class="menu-item">Rosemary & Garlic Bread <strong>(V)</strong></li>
-            <li class="menu-item"><strong>Salads - </strong> Caprese, Garden, Rocket & Pear</li>
+            <li class="menu-item">Hot Salami, Chilli &amp; Honey</li>
+            <li class="menu-item">Rosemary &amp; Garlic Bread <strong>(V)</strong></li>
+            <li class="menu-item"><strong>Salads - </strong> Caprese, Garden, Rocket &amp; Pear</li>
           </ul>
         </div>
 
@@ -98,7 +141,9 @@
           </ul>
         </div>
 
-        <div style="margin-top:12px;color:var(--muted);font-size:13px;margin-bottom:12px;">If you have RSVPd with Gluten Free we have arranged for Pizzas to be made seperately. Please provide your name to our friendly wait staff.</div>
+        <div class="note">
+          If you have RSVP'd with Gluten Free, we have arranged for pizzas to be made separately. Please provide your name and dietary requirements when you arrive so we can ensure everything is prepared correctly.
+        </div>
       </div>
     </section>
   </main>
