@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Food</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/common.css">
+  <meta name="theme-color" content="#f4f1eb">
+  <style>
+    :root{--shadow:0 6px 24px rgba(17,18,15,0.06)}
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;min-height:100%;font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg) 0%,var(--paper) 100%);padding:calc(var(--gutter) * 1.25);display:flex;align-items:flex-start;justify-content:center}
+    .container{position:relative;z-index:2;max-width:var(--max-width);width:100%;margin:0 auto;text-align:center;padding:calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2)}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.55));border-radius:var(--radius);padding:calc(var(--gutter) * 0.9);box-shadow:var(--shadow);max-width:680px;margin:0 auto}
+    .menu-section{margin-bottom:20px;text-align:left}.menu-section h3{font-family:'Playfair Display',serif;color:var(--accent-dark);letter-spacing:1.5px;margin:0 0 8px;font-size:1.2rem}.menu-section ul{margin:0;padding:0 0 0 18px;color:var(--muted)}.menu-item{margin-bottom:6px;line-height:1.5}.note{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.6}
+    @media (max-width:880px){.artwork{display:none}.container{padding:0}body{padding:24px}}
+  </style>
+</head>
+<body>
+  <div class="artwork left" aria-hidden="true"></div><div class="artwork right" aria-hidden="true"></div>
+  <main class="container">
+    <header>
+      <h1>YASMIN &amp; AARON</h1><div class="lead">17 October 2026</div>
+      <nav aria-label="Main"><a href="index.html">Home</a><a href="gallery.html">Gallery</a><a href="drinks.html" class="active" aria-current="page">Food</a></nav>
+    </header>
+    <section class="card"><div style="margin:0 auto;text-align:left">
+      <div class="menu-section"><h3>Starters</h3><ul><li class="menu-item">Smoked Salmon &amp; Cream Cheese Tartlet with Baby Capers</li><li class="menu-item">Prosciutto and Goats Cheese Wraps with Roasted Capsicum <strong>(GF)</strong></li><li class="menu-item">Bite-Size Beef Meatballs with Parmesan and Parsley <strong>(GF)</strong></li><li class="menu-item">3 Cheese Arancini <strong>(V)</strong></li><li class="menu-item">Crostini with Pear, Gorgonzola &amp; Pink Peppercorns <strong>(V)</strong></li></ul></div>
+      <div class="menu-section"><h3>Pizza</h3><ul><li class="menu-item">Margherita <strong>(V)</strong></li><li class="menu-item">Hawaiian</li><li class="menu-item">BBQ Chicken</li><li class="menu-item">Hot Salami, Chilli &amp; Honey</li><li class="menu-item">Rosemary &amp; Garlic Bread <strong>(V)</strong></li><li class="menu-item"><strong>Salads - </strong> Caprese, Garden, Rocket &amp; Pear</li></ul></div>
+      <div class="menu-section"><h3>Gelato</h3><ul><li class="menu-item">Passionfruit Sorbet <strong>(Vegan)</strong></li><li class="menu-item">Chocolate</li><li class="menu-item">Salted Caramel</li></ul></div>
+      <div class="note">If you have RSVP'd with Gluten Free, we have arranged for pizzas to be made separately. Please provide your name and dietary requirements when you arrive so we can ensure everything is prepared separately.</div>
+    </div></section>
+  </main>
+</body>
+</html>
