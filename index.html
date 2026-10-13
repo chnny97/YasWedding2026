@@ -16,7 +16,7 @@
   <style>
     :root{--shadow:0 6px 24px rgba(17,18,15,0.06)}
     *{box-sizing:border-box}html,body{height:100%}
-    body{margin:0;min-height:100%;font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg) 0%,var(--paper) 100%);padding:48px 24px}
+    body{margin:0;min-height:100%;font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg) 0%,var(--p[...]
     .artwork{position:fixed;top:0;bottom:0;width:180px;background:linear-gradient(180deg,rgba(208,201,190,0.34),rgba(208,201,190,0.14));z-index:0}
     .artwork.left{left:0;border-right:1px solid rgba(71,83,66,0.06)}
     .artwork.right{right:0;border-left:1px solid rgba(71,83,66,0.06)}
@@ -26,17 +26,18 @@
     nav{display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;margin:0 auto 1.5rem}
     nav a{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.55rem 0.9rem;border-radius:999px;transition:all .2s ease}
     nav a.active,nav a:hover{background:rgba(71,83,66,0.06);color:var(--accent-dark)}
-    .container{position:relative;z-index:2;max-width:var(--max-width);width:100%;margin:0 auto;text-align:center;padding:calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);background:rgba(255,255,255,0.32);backdrop-filter:blur(2px)}
-    .card{margin:1.5rem auto 2rem;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.55));border-radius:var(--radius);padding:calc(var(--gutter) * 0.9);box-shadow:var(--shadow);border:1px solid rgba(71,83,66,0.09)}
+    .container{position:relative;z-index:2;max-width:var(--max-width);width:100%;margin:0 auto;text-align:center;padding:calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);background:rgba(255,255,255,0.12);backdrop-filter:blur(1px)}
+    .card{margin:1.5rem auto 2rem;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.55));border-radius:var(--radius);padding:calc(var(--gutter) * 0.9);box-shadow:var(--shadow);border:1px solid rgba(71,83,66,0.04)}
     .upload-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .btn{padding:12px 22px;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px;min-width:160px;justify-content:center;text-decoration:none;border:none;transition:transform .15s ease, box-shadow .15s ease;background:transparent}
+    .btn{padding:12px 22px;border-radius:10px;font-size:16px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:8px;min-width:160px;justify-content:center;text-decoration:none;border:none;transition:all .2s ease}
     .btn:hover{transform:translateY(-1px)}
     .btn.primary{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(109,142,77,0.12)}
     .btn.ghost{background:transparent;color:var(--accent-dark);border:1px solid rgba(71,83,66,0.08)}
     button:disabled{opacity:.55;cursor:default;transform:none}
     .status{font-size:14px;color:var(--muted);min-height:1.25rem}
-    .progress-wrap{width:100%;max-width:560px;margin-top:6px}.progress-bg{width:100%;height:12px;background:rgba(122,139,112,0.16);border-radius:999px;overflow:hidden}.progress-bar{height:12px;background:linear-gradient(90deg,var(--accent),#b1c7a0);width:0;transition:width .2s ease;border-radius:999px}
-    .previews{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}.preview{width:72px;height:72px;border-radius:8px;overflow:hidden;background:#f7f6f4;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(17,18,15,0.06)}.preview img{width:100%;height:100%;object-fit:cover;display:block}
+    .progress-wrap{width:100%;max-width:560px;margin-top:6px}.progress-bg{width:100%;height:12px;background:rgba(122,139,112,0.16);border-radius:999px;overflow:hidden}.progress-bar{height:12px;background:linear-gradient(90deg,var(--accent),#a0b88d);width:0;transition:width .24s ease;border-radius:999px}
+    .previews{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}.preview{width:72px;height:72px;border-radius:8px;overflow:hidden;background:#f7f6f4;display:flex;align-items:center;justify-content:center;border:1px solid rgba(71,83,66,0.06)}
+    .preview img{width:100%;height:100%;object-fit:cover;display:block}
     .details{margin-top:2.4rem;color:var(--muted);font-size:14px;line-height:1.6}
     .memory-section{margin-top:1.5rem;padding-top:1rem;border-top:1px solid rgba(71,83,66,0.12)}
     .memory-grid{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:0.5rem 2rem;list-style:none;padding:0;margin:0.8rem 0 0;text-align:left;color:var(--muted)}
@@ -103,7 +104,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-    import { getStorage, ref, uploadBytesResumable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
+    import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAJbdkv6haicSTZJ5he3Y7uPO1DhVQZNEk",
@@ -170,47 +171,58 @@
       for (const f of files) totalBytes += f.size;
       let bytesTransferredOverall = 0;
 
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const fileRef = ref(storage, `photos/${timestamp}_${file.name}`);
+      try {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const timestamp = Date.now();
+          const safeFileName = `${timestamp}-${i}-${file.name.replace(/\s+/g, '_')}`;
+          const fileRef = ref(storage, `photos/${safeFileName}`);
 
-        const uploadTask = uploadBytesResumable(fileRef, file);
+          await new Promise((resolve, reject) => {
+            const uploadTask = uploadBytesResumable(fileRef, file);
 
-        await new Promise((resolve, reject) => {
-          uploadTask.on('state_changed', snapshot => {
-            const fileProgress = snapshot.bytesTransferred;
-            const overallTransferred = bytesTransferredOverall + fileProgress;
-            const percent = Math.round((overallTransferred / totalBytes) * 100);
-            progressBar.style.width = percent + '%';
-            progressBar.setAttribute('aria-valuenow', String(percent));
-          }, error => {
-            console.error('Upload error', error);
-            statusEl.textContent = '❌ Upload failed. Please try again.';
-            setUploading(false);
-            reject(error);
-          }, () => {
-            bytesTransferredOverall += file.size;
-            const doneCount = i + 1;
-            statusEl.textContent = `Uploaded ${doneCount}/${files.length} photo(s)...`;
-            resolve();
+            uploadTask.on('state_changed', snapshot => {
+              const fileProgress = snapshot.bytesTransferred || 0;
+              const overallTransferred = bytesTransferredOverall + fileProgress;
+              const percent = Math.min(100, Math.round((overallTransferred / totalBytes) * 100));
+              progressBar.style.width = percent + '%';
+              progressBar.setAttribute('aria-valuenow', String(percent));
+            }, error => {
+              console.error('Upload error', error);
+              statusEl.textContent = `❌ Upload failed for ${file.name}: ${error.message || error}`;
+              setUploading(false);
+              reject(error);
+            }, async () => {
+              bytesTransferredOverall += file.size;
+              const doneCount = i + 1;
+              statusEl.textContent = `Uploaded ${doneCount}/${files.length} photo(s)...`;
+
+              try {
+                const url = await getDownloadURL(fileRef);
+                console.log('Uploaded file URL:', url);
+              } catch (downloadErr) {
+                console.warn('Could not fetch download URL for uploaded file', downloadErr);
+              }
+
+              resolve();
+            });
           });
-        }).catch((err) => {
-          console.error(err);
-        });
+        }
+
+        statusEl.textContent = '✅ Upload complete — thank you for sharing!';
+        progressBar.style.width = '100%';
+        progressBar.setAttribute('aria-valuenow', '100');
+        setTimeout(() => {
+          progressBar.style.width = '0%';
+          progressBar.setAttribute('aria-valuenow', '0');
+          setUploading(false);
+        }, 1400);
+
+        cameraInput.value = '';
+        libraryInput.value = '';
+      } catch (err) {
+        console.error('Batch upload failed', err);
       }
-
-      statusEl.textContent = '✅ Upload complete — thank you for sharing!';
-      progressBar.style.width = '100%';
-      progressBar.setAttribute('aria-valuenow', '100');
-      setTimeout(() => {
-        progressBar.style.width = '0%';
-        progressBar.setAttribute('aria-valuenow', '0');
-        setUploading(false);
-      }, 1400);
-
-      cameraInput.value = '';
-      libraryInput.value = '';
     }
   </script>
 </body>
