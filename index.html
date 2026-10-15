@@ -14,6 +14,202 @@
   <meta name="theme-color" content="#f4f1eb">
 
   <style>
+    /* Page-specific styles (design tokens and header styles now in common.css) */
+    :root{
+      --shadow: 0 6px 24px rgba(17,18,15,0.06);
+    }
+
+    /* Base / reset */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      font-family: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color:var(--text);
+      background: linear-gradient(180deg, var(--bg) 0%, var(--paper) 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding: calc(var(--gutter) * 1.25);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+
+    /* Main content container */
+    .container{
+      position:relative;
+      z-index:2;
+      max-width:var(--max-width);
+      width:100%;
+      margin:0 auto;
+      text-align:center;
+      padding: calc(var(--gutter) * 1.5) calc(var(--gutter) * 1.2);
+      background: rgba(255,255,255,0.0); /* keep transparent to show art */
+      backdrop-filter: blur(0.0px);
+    }
+
+    /* Upload card */
+    .card{
+      margin: 1.5rem auto 2rem;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.55));
+      border-radius: var(--radius);
+      padding: calc(var(--gutter) * 0.9);
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+
+    .upload-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    /* Unified button style */
+    .btn{
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size:16px;
+      cursor:pointer;
+      font-weight:600;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-width:160px; /* ensure equal size */
+      justify-content:center;
+      text-decoration:none;
+      border: none;
+    }
+    .btn.primary{
+      background:var(--accent);
+      color:white;
+      box-shadow: 0 6px 18px rgba(109,142,77,0.12);
+    }
+    .btn.ghost{
+      background:transparent;
+      color:var(--accent-dark);
+      border:1px solid rgba(71,83,66,0.08);
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:default;
+      transform:none;
+    }
+
+    .status{
+      font-size:14px;
+      color:var(--muted);
+      min-height:1.25rem;
+    }
+
+    /* Progress area */
+    .progress-wrap{
+      width:100%;
+      max-width:560px;
+      margin-top:6px;
+    }
+    .progress-bar {
+      height: 12px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
+      width:0%;
+      border-radius: 999px;
+      transition: width .35s ease;
+      box-shadow: 0 6px 16px rgba(75,108,67,0.12) inset;
+    }
+    .progress-bg{
+      height:12px;
+      background:#ececec;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    /* Thumbnails */
+    .previews{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:10px;
+    }
+    .preview{
+      width:72px;
+      height:72px;
+      border-radius:8px;
+      overflow:hidden;
+      background:#f7f6f4;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(0,0,0,0.03);
+    }
+    .preview img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .memory-section{
+      margin-top:2.4rem;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6
+    }
+    
+    .memory-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(180px,1fr));
+      gap:0.5rem 2rem;
+      list-style:none;
+      padding:0;
+      margin:0.8rem 0 0;
+      text-align:left;
+      color:var(--muted)
+    }
+    
+    .memory-grid li{
+      position:relative;
+      line-height:1.8;
+      padding-left:1.35rem
+    }
+    
+    .memory-grid li::before{
+      content:'♡';
+      position:absolute;
+      left:0;
+      top:0;
+      color:var(--accent);
+      font-size:0.9rem
+    }
+    
+    .memory-grid li:last-child{
+      grid-column:1 / -1;
+      list-style:none;
+      padding-left:0;
+      display:flex;
+      justify-content:center;
+      margin-top:0.25rem
+    }
+    
+    .memory-grid li:last-child::before{
+      display:none
+    }
+
+    /* Small screens adjustments */
+    @media (max-width: 880px){
+      .artwork{display:none} /* hide large side artwork on small screens for better readability */
+      body{padding:24px}
+      .card{padding:18px}
+      .container{padding:0}
+    }
+    @media (max-width:420px){
+      h1{font-size:22px; letter-spacing:3px}
+      .upload-actions{flex-direction:column}
+      .preview{width:64px;height:64px}
+      .btn{min-width:unset;width:100%}
+    }
+  </style>
+  <style>
     :root{--shadow:0 6px 24px rgba(17,18,15,0.06)}
     *{box-sizing:border-box}html,body{height:100%}
     body{margin:0;min-height:100%;font-family:'Montserrat',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg) 0%,var(--paper) 100%);padding:calc(var(--gutter) * 1.25);display:flex;align-items:flex-start;justify-content:center}
